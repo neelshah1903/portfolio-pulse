@@ -377,13 +377,14 @@ tr.ttm-row td:first-child{color:var(--accent)}
           <th onclick="sortBy('revenue')">Revenue</th>
           <th onclick="sortBy('netProfit')">Net Profit</th>
           <th onclick="sortBy('eps')">EPS</th>
-          <th onclick="sortBy('margin')">Margin %</th>
+          <th onclick="sortBy('opMargin')" id="th-opMargin">Op. Margin</th>
+          <th onclick="sortBy('margin')">Net Margin</th>
           <th onclick="sortBy('revYoY')">Rev YoY %</th>
           <th onclick="sortBy('patYoY')">PAT YoY %</th>
         </tr>
       </thead>
       <tbody id="data-tbody">
-        <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📊</div><h2>Add stocks to see data</h2><p>Use the search bar above</p></div></td></tr>
+        <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📊</div><h2>Add stocks to see data</h2><p>Use the search bar above</p></div></td></tr>
       </tbody>
     </table>
   </div>
@@ -902,7 +903,7 @@ function renderScatter() {
 function sortBy(col) {
   if (sortState.col===col) sortState.dir*=-1; else { sortState.col=col; sortState.dir=1; }
   document.querySelectorAll('th').forEach(th=>th.classList.remove('sort-asc','sort-desc'));
-  const idx=['ticker','quarter','revenue','netProfit','eps','margin','revYoY','patYoY'].indexOf(col);
+  const idx=['ticker','quarter','revenue','netProfit','eps','opMargin','margin','revYoY','patYoY'].indexOf(col);
   const ths=document.querySelectorAll('th');
   if (idx>=0) ths[idx].classList.add(sortState.dir===1?'sort-asc':'sort-desc');
   renderTable();
@@ -917,11 +918,15 @@ function renderTable() {
     document.getElementById('row-count').textContent='0 rows'; return;
   }
 
+  // Label op margin column accurately per market
+  const opMarginLabel = viewMarket === 'NSE' ? 'OPM% (≈EBITDA)' : viewMarket === 'US' ? 'EBIT Margin' : 'Op. Margin';
+  document.getElementById('th-opMargin').textContent = opMarginLabel;
+
   let rows=[];
   keys.forEach(key=>{
     const d=portfolio[key], color=getColor(key);
     d.quarters.forEach((q,i)=>{
-      rows.push({ticker:d.ticker,mkt:d.market,color,quarter:q.label,revenue:q.revenue,netProfit:q.netProfit,eps:q.eps,margin:q.margin,revYoY:yoy(d.quarters,'revenue',i),patYoY:yoy(d.quarters,'netProfit',i),isTTM:false,unit:d.unit});
+      rows.push({ticker:d.ticker,mkt:d.market,color,quarter:q.label,revenue:q.revenue,netProfit:q.netProfit,eps:q.eps,opMargin:q.opMargin??null,margin:q.margin,revYoY:yoy(d.quarters,'revenue',i),patYoY:yoy(d.quarters,'netProfit',i),isTTM:false,unit:d.unit});
     });
   });
 
@@ -936,6 +941,7 @@ function renderTable() {
       <td title="${r.unit}">${fmt(r.revenue, r.mkt)}</td>
       <td title="${r.unit}">${fmt(r.netProfit, r.mkt)}</td>
       <td>${r.eps?r.eps.toFixed(2):'—'}</td>
+      <td>${r.opMargin!=null?r.opMargin.toFixed(1)+'%':'—'}</td>
       <td>${r.margin?r.margin.toFixed(1)+'%':'—'}</td>
       <td class="${pctCls(r.revYoY)}">${fmtPct(r.revYoY)}</td>
       <td class="${pctCls(r.patYoY)}">${fmtPct(r.patYoY)}</td>
