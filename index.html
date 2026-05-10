@@ -56,6 +56,8 @@ input::placeholder{color:var(--muted)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 .btn-refresh{background:rgba(0,229,184,.1);border:1px solid var(--accent2);color:var(--accent2)}
 .btn-refresh:hover{background:rgba(0,229,184,.2);box-shadow:0 2px 12px rgba(0,229,184,.25)}
+.btn-clear{background:rgba(239,68,68,.1);border:1px solid var(--red);color:var(--red)}
+.btn-clear:hover{background:rgba(239,68,68,.2);box-shadow:0 2px 12px rgba(239,68,68,.2)}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 
 /* ── Status ── */
@@ -199,7 +201,8 @@ tr.ttm-row td:first-child{color:var(--accent)}
       <input id="ticker-input" type="text" placeholder="TICKER?" maxlength="20"/>
       <button id="add-btn" class="btn btn-primary" onclick="addStock()">+ Add Stock</button>
     </div>
-    <button id="refresh-btn" class="btn btn-sm btn-refresh" onclick="refreshAll()" title="Re-fetch latest data for all stocks">↻ Refresh</button>
+    <button id="refresh-btn" class="btn btn-sm btn-refresh" onclick="refreshAll()" title="Re-fetch latest data for all stocks">↻ Update</button>
+    <button class="btn btn-sm btn-clear" onclick="clearAll()" title="Remove all stocks and start fresh">✕ Clear All</button>
     <button class="btn btn-sm btn-ghost" onclick="exportCSV()">⬇ CSV</button>
   </div>
 </header>
@@ -431,6 +434,14 @@ function removeStock(key) {
 }
 
 document.getElementById('ticker-input').addEventListener('keydown', e => { if (e.key === 'Enter') addStock(); });
+
+function clearAll() {
+  if (!Object.keys(portfolio).length) { setStatus('Nothing to clear', 'error'); return; }
+  if (!confirm('Remove all stocks and start fresh?')) return;
+  portfolio = {}; colorMap = {};
+  save(); render();
+  setStatus('Portfolio cleared', 'ok');
+}
 
 async function refreshAll() {
   const keys = Object.keys(portfolio);
