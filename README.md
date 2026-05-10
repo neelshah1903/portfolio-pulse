@@ -1,82 +1,116 @@
 # Portfolio Pulse
 
-A clean, dark-themed stock portfolio tracker for **Indian** and **US** equities — built as a single HTML file with no install required.
+A full-stack equity research dashboard for **Indian (NSE) and US stocks** — built by a CFA Level 3 candidate who got tired of switching between 5 different tabs to track fundamentals and macro.
 
-**Live:** https://neelshah1903.github.io/portfolio-pulse/
+**Live demo → https://neelshah1903.github.io/portfolio-pulse/**
+
+![Portfolio Pulse Dashboard](screenshot.png)
 
 ---
 
 ## What it does
 
-- Add any NSE or US stock ticker and instantly pull the last 8–12 quarters of financials
-- Separate **🇮🇳 India** and **🇺🇸 US** dashboard views — no mixing of markets in charts
-- Quarterly data: Revenue, Net Profit, EPS, Net Margin
-- Cross-stock comparisons only include stocks that have **reported the latest quarter** — stocks still pending are flagged with ⏳ and excluded from YoY charts and the scatter quadrant until results are out
-- Everything saved to browser localStorage — your portfolio persists across sessions
+Add any NSE or US ticker and instantly see:
+- Last 8–12 quarters of financials pulled from live sources
+- Revenue, Net Profit, EPS, Operating Margin (OPM% for NSE / EBIT Margin for US), Net Margin
+- YoY growth rates, TTM aggregates, and cross-stock comparisons
+- A live macro dashboard with 8+ charts sourced from FRED and Yahoo Finance
 
-## Features
-
-### KPI Cards
-- Portfolio TTM Revenue & Net Profit (auto-formatted: ₹ Cr / $ M / $ B)
-- Portfolio Revenue & PAT YoY growth (vs same quarter last year)
-- Best revenue and PAT performer of the quarter
-
-### Charts
-| Chart | Description |
-|---|---|
-| Revenue Trend | Line chart — 4Q / 8Q / 12Q toggle |
-| Net Profit Trend | Line chart with same period |
-| Revenue YoY % | Bar chart — latest quarter only, qualified stocks |
-| PAT YoY % | Bar chart — latest quarter only, qualified stocks |
-| Net Margin % | Multi-line trend — last 8 quarters |
-| Quadrant (Scatter) | Rev growth vs PAT growth — Star / Cash Cow / Turnaround / Laggard |
-
-### Holdings chips
-Each stock shows a mini revenue sparkline and the YoY revenue growth % at a glance.
-
-### Quarterly table
-Sortable by any column. Includes TTM rows. Hover on Revenue/Profit cells to see the unit (₹ Cr or $ M).
-
-### CSV Export
-Downloads all quarterly data for the active market view.
+Everything persists in your browser — no login, no account, no install.
 
 ---
 
-## How to use
+## Features
 
-1. Open https://neelshah1903.github.io/portfolio-pulse/
-2. Select **🇮🇳 India** or **🇺🇸 US** from the dropdown
-3. Type a ticker (e.g. `HDFCBANK`, `AAPL`) and click **+ Add Stock**
-4. Switch between **All / India / US** tabs to isolate each market's dashboard
+### 📊 Market Watch Tab
+Real-time macro environment in one place:
 
-Your portfolio is saved in your browser — no account needed.
+| Chart | Source | Detail |
+|---|---|---|
+| S&P 500 · Nasdaq · Dow Jones | FRED | Indexed to 100 (2-year trend) |
+| US Treasury Yields (2Y & 10Y) | FRED | With yield spread — inverted curve flagged ⚠ |
+| Yield Spread (10Y − 2Y) | FRED | Bar chart — green = normal, red = inverted |
+| VIX Fear Index | FRED | With 20 (calm) and 30 (fear) reference lines |
+| Inflation — Core PCE & CPI YoY | FRED | Fed's 2% target overlaid |
+| Unemployment Rate | FRED | 2-year trend |
+| Crude Oil — WTI & Brent | Yahoo Finance | Real-time futures prices |
+| Fed Funds Rate | FRED | Monthly, 6-year history |
+
+### 📈 Portfolio Analysis
+- **KPI cards** — TTM Revenue, TTM Profit, portfolio YoY growth, best performer
+- **Trend charts** — Revenue, Net Profit, and Operating Margin % across last 4/8/12 quarters
+- **YoY bar charts** — Revenue and PAT growth, latest quarter, all holdings compared
+- **Quadrant scatter** — Rev growth vs PAT growth mapped to Star / Cash Cow / Turnaround / Laggard
+- **Sortable table** — all quarterly rows with OPM%, Net Margin, YoY, EPS
+
+### 🌐 Macro Indicator Strip
+Always-visible strip above all tabs:
+`S&P 500 · Nasdaq · Dow Jones · Nikkei · 10Y · 2Y · Spread · Fed Rate · VIX · Core PCE · CPI · Unemployment · WTI · Brent`
+
+### ✦ AI Portfolio Analyst
+Ask natural language questions about your portfolio — powered by Llama 3.3 70B via Groq. Context-aware: knows your stocks' actual numbers.
+
+### Holdings Chips
+Each stock shows a mini revenue sparkline + YoY% at a glance. Pending-quarter stocks flagged with ⏳ and excluded from cross-stock comparisons until they report.
+
+### CSV Export
+Download all quarterly data for the active market view.
 
 ---
 
 ## Data sources
 
-| Market | Source | Data |
+| Data | Source | Notes |
 |---|---|---|
-| 🇮🇳 NSE | [Screener.in](https://www.screener.in) | Consolidated → Standalone fallback |
-| 🇺🇸 US | [Barchart.com](https://www.barchart.com) | Quarterly income statement |
-
-Fetched via a lightweight Node.js proxy ([portfolio-proxy](https://github.com/neelshah1903/portfolio-proxy)) hosted on Render.
+| 🇮🇳 NSE fundamentals | [Screener.in](https://www.screener.in) | Consolidated → Standalone fallback |
+| 🇺🇸 US fundamentals | [Barchart.com](https://www.barchart.com) | Quarterly income statement |
+| Indices, yields, VIX, inflation, unemployment | [FRED (St. Louis Fed)](https://fred.stlouisfed.org) | Free public API |
+| WTI & Brent crude | Yahoo Finance | Front-month futures (CL=F, BZ=F) |
+| AI answers | [Groq / Llama 3.3 70B](https://groq.com) | Portfolio context injected |
 
 ---
 
-## Tech stack
+## Architecture
 
-- **Frontend:** Vanilla HTML/CSS/JS — zero frameworks, zero dependencies
-- **Charts:** [Chart.js 4](https://www.chartjs.org/)
-- **Backend proxy:** Node.js + Express + Cheerio (HTML scraping)
-- **Hosting:** GitHub Pages (frontend) + Render free tier (proxy)
-- **Storage:** Browser localStorage
+```
+Browser (GitHub Pages)
+    │
+    ├── Chart.js 4 (charts)
+    └── Vanilla JS → fetch()
+            │
+            ▼
+    Node.js Proxy (Render)
+            │
+            ├── /stock  → scrapes Screener.in or Barchart
+            ├── /macro  → FRED API + Yahoo Finance (4hr cache)
+            ├── /macro-chart → FRED + Yahoo (4hr cache, 2yr history)
+            └── /chat   → Groq API
+```
+
+**Frontend:** Vanilla HTML/CSS/JS · Chart.js 4 · GitHub Pages  
+**Backend:** Node.js · Express · Cheerio · Render free tier  
+**APIs:** FRED (macro) · Yahoo Finance (oil) · Groq (AI)  
+**Storage:** Browser localStorage
+
+---
+
+## Running locally
+
+```bash
+# Backend
+cd portfolio-proxy
+npm install
+FRED_API_KEY=your_key GROQ_API_KEY=your_key node index.js
+
+# Frontend — just open portfolio-tracker.html in your browser
+# (change PROXY in the HTML to http://localhost:3000)
+```
 
 ---
 
 ## Limitations
 
-- Render free tier spins down after inactivity — first stock fetch may take ~15 seconds to wake up
-- US stock data depends on Barchart.com page structure; may break if they change their layout
-- Currencies are not converted — India stocks are in ₹ Crore, US stocks in $ Million; mixed-market KPI totals are hidden to avoid misleading sums
-- Historical data limited to what Screener.in / Barchart shows publicly (typically 8–12 quarters)
+- Render free tier spins down after inactivity — first fetch takes ~15s to wake up
+- Scraping-dependent: breaks if Screener.in or Barchart change their HTML structure
+- Mixed-currency portfolio KPIs (₹ + $) are hidden to avoid misleading aggregates
+- Historical data limited to what the public pages show (~8–12 quarters)
