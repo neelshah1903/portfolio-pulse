@@ -188,6 +188,7 @@ tr.ttm-row td:first-child{color:var(--accent)}
 <!-- ── HEADER ── -->
 <header>
   <div class="logo">◈ Portfolio Pulse</div>
+  <button class="btn btn-sm btn-ghost" id="refresh-btn" onclick="refreshAll()" title="Re-fetch all stocks">↻ Refresh</button>
   <div class="header-right">
     <div class="search-wrap">
       <select id="market-select" class="market-select" onchange="syncViewToAdd()">
@@ -428,6 +429,29 @@ function removeStock(key) {
 }
 
 document.getElementById('ticker-input').addEventListener('keydown', e => { if (e.key === 'Enter') addStock(); });
+
+async function refreshAll() {
+  const keys = Object.keys(portfolio);
+  if (!keys.length) { setStatus('No stocks to refresh', 'error'); return; }
+  const btn = document.getElementById('refresh-btn');
+  btn.disabled = true;
+  btn.textContent = '↻ Refreshing…';
+  let done = 0, failed = [];
+  for (const key of keys) {
+    const d = portfolio[key];
+    setStatus(`<span class="spinner"></span> Refreshing ${d.ticker} (${++done}/${keys.length})…`, '');
+    try {
+      const res = await fetch(`${PROXY}/stock?ticker=${encodeURIComponent(d.ticker)}&market=${d.market}`);
+      if (!res.ok) throw new Error(res.statusText);
+      const data = await res.json();
+      if (data.quarters?.length) portfolio[key].quarters = data.quarters;
+    } catch { failed.push(d.ticker); }
+  }
+  save(); render();
+  btn.disabled = false; btn.textContent = '↻ Refresh';
+  if (failed.length) setStatus(`✓ Refreshed — failed: ${failed.join(', ')}`, 'error');
+  else setStatus(`✓ All ${keys.length} stocks refreshed`, 'ok');
+}
 function setStatus(msg, type) { const el = document.getElementById('status-bar'); el.innerHTML = msg; el.className = type; }
 
 // ── Quarter helpers ───────────────────────────────────────
