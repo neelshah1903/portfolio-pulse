@@ -324,7 +324,7 @@ tr.ttm-row td:first-child{color:var(--accent)}
 
   <div class="section-title">Trend Analysis</div>
   <div id="trend-charts-section">
-    <div class="charts-row charts-row-2">
+    <div class="charts-row charts-row-3">
       <div class="chart-card">
         <div class="chart-header">
           <span class="chart-title" id="rev-trend-title">Revenue Trend</span>
@@ -341,6 +341,11 @@ tr.ttm-row td:first-child{color:var(--accent)}
         <div class="chart-header"><span class="chart-title" id="pat-trend-title">Net Profit Trend</span></div>
         <div class="chart-legend" id="pat-legend"></div>
         <div class="chart-wrap chart-wrap-tall"><canvas id="pat-trend-chart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><span class="chart-title" id="opm-trend-title">Operating Margin %</span></div>
+        <div class="chart-legend" id="opm-legend"></div>
+        <div class="chart-wrap chart-wrap-tall"><canvas id="opm-trend-chart"></canvas></div>
       </div>
     </div>
   </div>
@@ -816,14 +821,32 @@ function renderTrendCharts() {
   const unitStr = units.join(' / ');
   document.getElementById('rev-trend-title').textContent = `Revenue Trend${unitStr?' ('+unitStr+')':''}`;
   document.getElementById('pat-trend-title').textContent = `Net Profit Trend${unitStr?' ('+unitStr+')':''}`;
+  document.getElementById('opm-trend-title').textContent = viewMarket==='US' ? 'EBIT Margin %' : viewMarket==='NSE' ? 'OPM % (≈EBITDA)' : 'Operating Margin %';
 
-  destroyChart('rev-trend'); destroyChart('pat-trend');
+  destroyChart('rev-trend'); destroyChart('pat-trend'); destroyChart('opm-trend');
   const legHtml = keys.map(k=>`<span class="legend-item"><span class="legend-dot" style="background:${getColor(k)}"></span>${portfolio[k].ticker}</span>`).join('');
 
   const revData = buildTrendData('revenue');
   if (revData) { charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:TREND_OPT}); document.getElementById('rev-legend').innerHTML=legHtml; }
   const patData = buildTrendData('netProfit');
   if (patData) { charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:TREND_OPT}); document.getElementById('pat-legend').innerHTML=legHtml; }
+
+  // OPM % trend (% values, not currency — use separate options)
+  destroyChart('opm-trend');
+  if (!keys.length) return;
+  let labels=[];
+  keys.forEach(k=>{ portfolio[k].quarters.slice(-numQuarters).forEach(x=>{ if(!labels.includes(x.label)) labels.push(x.label); }); });
+  labels=labels.slice(-numQuarters);
+  const opmDatasets = keys.map(k=>{ const d=portfolio[k],color=getColor(k); return {
+    label:d.ticker,
+    data:labels.map(lbl=>{ const f=d.quarters.find(x=>x.label===lbl); return (f&&f.opMargin!=null)?f.opMargin:null; }),
+    borderColor:color, backgroundColor:color+'22', borderWidth:2, pointRadius:3, pointHoverRadius:6, tension:0.35, spanGaps:true
+  };});
+  const opmOpt = {...TREND_OPT, scales:{...TREND_OPT.scales, y:{...TREND_OPT.scales.y, ticks:{...TREND_OPT.scales.y.ticks, callback:v=>v+'%'}}}};
+  if (opmDatasets.some(ds=>ds.data.some(v=>v!=null))) {
+    charts['opm-trend']=new Chart(document.getElementById('opm-trend-chart'),{type:'line',data:{labels,datasets:opmDatasets},options:opmOpt});
+    document.getElementById('opm-legend').innerHTML=legHtml;
+  }
 }
 
 // ── YoY bar charts ────────────────────────────────────────
