@@ -816,10 +816,7 @@ function buildTrendData(field) {
   return { labels, datasets };
 }
 
-function makeTrendOpt(datasets) {
-  // Use log scale if max/min ratio > 10 (i.e. stocks are very different sizes)
-  const allVals = (datasets||[]).flatMap(d=>d.data.filter(v=>v!=null&&v>0));
-  const useLog = allVals.length > 1 && (Math.max(...allVals) / Math.min(...allVals)) > 10;
+function makeTrendOpt(useLog) {
   return {
     responsive:true, maintainAspectRatio:false,
     interaction:{mode:'index',intersect:false},
@@ -834,7 +831,7 @@ function makeTrendOpt(datasets) {
     }
   };
 }
-const TREND_OPT = makeTrendOpt([]);
+const TREND_OPT = makeTrendOpt(false);
 
 function renderTrendCharts() {
   const keys = filteredKeys();
@@ -848,9 +845,9 @@ function renderTrendCharts() {
   const legHtml = keys.map(k=>`<span class="legend-item"><span class="legend-dot" style="background:${getColor(k)}"></span>${portfolio[k].ticker}</span>`).join('');
 
   const revData = buildTrendData('revenue');
-  if (revData) { charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:makeTrendOpt(revData.datasets)}); document.getElementById('rev-legend').innerHTML=legHtml; }
+  if (revData) { charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:makeTrendOpt(true)}); document.getElementById('rev-legend').innerHTML=legHtml; }
   const patData = buildTrendData('netProfit');
-  if (patData) { charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(patData.datasets)}); document.getElementById('pat-legend').innerHTML=legHtml; }
+  if (patData) { charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(false)}); document.getElementById('pat-legend').innerHTML=legHtml; }
 
   // OPM % trend (% values, not currency — use separate options)
   destroyChart('opm-trend');
