@@ -858,7 +858,6 @@ function sortBy(col) {
 function renderTable() {
   const tbody = document.getElementById('data-tbody');
   const keys = filteredKeys();
-  const showTTM = document.getElementById('show-ttm').checked;
 
   if (!keys.length) {
     tbody.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📊</div><h2>Add stocks to see data</h2><p>Use the search bar above</p></div></td></tr>';
