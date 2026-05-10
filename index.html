@@ -16,8 +16,6 @@
   --card-glow:0 0 0 1px var(--border),0 4px 24px rgba(0,0,0,.4);
 }
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
-
-/* ── Scrollbar ── */
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
@@ -49,18 +47,13 @@ input[type=text]{
 }
 input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,109,250,.15)}
 input::placeholder{color:var(--muted)}
-.btn{
-  padding:9px 18px;border-radius:10px;border:none;font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .2s;white-space:nowrap;
-}
+.btn{padding:9px 18px;border-radius:10px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
 .btn:active{transform:scale(.97)}
 .btn-primary{background:linear-gradient(135deg,var(--accent),#5a4ee8);color:#fff;box-shadow:0 2px 12px rgba(124,109,250,.3)}
 .btn-primary:hover{box-shadow:0 4px 20px rgba(124,109,250,.5);transform:translateY(-1px)}
 .btn-sm{padding:5px 12px;font-size:12px;border-radius:7px}
 .btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted2)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
-.btn-danger-sm{background:transparent;border:1px solid transparent;color:var(--muted);padding:2px 6px;font-size:14px;border-radius:5px}
-.btn-danger-sm:hover{color:var(--red);background:rgba(239,68,68,.1)}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 
 /* ── Status ── */
@@ -72,48 +65,56 @@ input::placeholder{color:var(--muted)}
 #status-bar.error{color:var(--red)}
 #status-bar.ok{color:var(--green)}
 
+/* ── Market Tabs ── */
+.market-tabs-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 28px;display:flex;align-items:center;gap:0;
+}
+.mktab{
+  padding:10px 20px;font-size:12px;font-weight:700;letter-spacing:.05em;
+  border:none;background:transparent;color:var(--muted);cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;
+}
+.mktab:hover{color:var(--text)}
+.mktab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.mktab-count{
+  display:inline-block;background:var(--surface2);border-radius:10px;
+  padding:1px 7px;font-size:10px;margin-left:5px;color:var(--muted);
+}
+.mktab.active .mktab-count{background:rgba(124,109,250,.2);color:var(--accent)}
+
 /* ── Main layout ── */
 main{padding:0 28px 40px;max-width:1600px;margin:0 auto}
-
-/* ── Section titles ── */
 .section-title{
   font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
   color:var(--muted);margin:28px 0 14px;display:flex;align-items:center;gap:10px;
 }
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ── Hero KPI strip ── */
+/* ── KPI strip ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:20px}
 .kpi-card{
   background:var(--surface);border:1px solid var(--border);border-radius:14px;
   padding:18px 20px;position:relative;overflow:hidden;transition:border-color .2s;
 }
 .kpi-card:hover{border-color:var(--border2)}
-.kpi-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;
-  transition:opacity .2s;
-}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));opacity:0;transition:opacity .2s}
 .kpi-card:hover::before{opacity:1}
 .kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:10px}
 .kpi-value{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;line-height:1}
 .kpi-sub{font-size:11px;color:var(--muted);margin-top:6px}
-.kpi-badge{
-  display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;
-  padding:3px 8px;border-radius:6px;margin-top:8px;
-}
+.kpi-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:8px}
 .kpi-badge.up{background:rgba(34,197,94,.12);color:var(--green)}
 .kpi-badge.down{background:rgba(239,68,68,.12);color:var(--red)}
 .kpi-badge.neutral{background:rgba(107,122,170,.12);color:var(--muted2)}
 .kpi-icon{position:absolute;top:16px;right:16px;font-size:22px;opacity:.15}
 
-/* ── Stock chips with sparklines ── */
+/* ── Chips ── */
 .chips-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
 .chip{
   display:flex;align-items:center;gap:10px;
   background:var(--surface2);border:1px solid var(--border);border-radius:12px;
-  padding:8px 10px 8px 14px;cursor:default;transition:border-color .2s,background .2s;
-  min-width:180px;
+  padding:8px 10px 8px 14px;cursor:default;transition:border-color .2s,background .2s;min-width:180px;
 }
 .chip:hover{border-color:var(--border2);background:var(--surface3)}
 .chip-info{flex:1;min-width:0}
@@ -124,15 +125,12 @@ main{padding:0 28px 40px;max-width:1600px;margin:0 auto}
 .chip-remove{color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;transition:all .15s;margin-left:4px}
 .chip-remove:hover{color:var(--red);background:rgba(239,68,68,.1)}
 
-/* ── Charts grid ── */
+/* ── Charts ── */
 .charts-row{display:grid;gap:16px;margin-bottom:16px}
 .charts-row-2{grid-template-columns:1fr 1fr}
 .charts-row-3{grid-template-columns:1fr 1fr 1fr}
 .charts-row-1{grid-template-columns:1fr}
-.chart-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:14px;
-  padding:20px;box-shadow:var(--card-glow);
-}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--card-glow)}
 .chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .chart-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted2)}
 .chart-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
@@ -141,13 +139,8 @@ main{padding:0 28px 40px;max-width:1600px;margin:0 auto}
 .chart-wrap{position:relative}
 .chart-wrap canvas{max-height:240px}
 .chart-wrap-tall canvas{max-height:300px}
-
-/* ── Quarters toggle ── */
 .quarters-toggle{display:flex;gap:4px;background:var(--surface2);border-radius:8px;padding:3px}
-.q-btn{
-  padding:4px 10px;border-radius:6px;border:none;background:transparent;
-  color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;
-}
+.q-btn{padding:4px 10px;border-radius:6px;border:none;background:transparent;color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
 .q-btn.active{background:var(--accent);color:#fff}
 
 /* ── Table ── */
@@ -155,67 +148,49 @@ main{padding:0 28px 40px;max-width:1600px;margin:0 auto}
 .table-title-row{font-size:15px;font-weight:700}
 .badge{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:2px 10px;font-size:11px;color:var(--muted)}
 .table-wrap{border-radius:14px;border:1px solid var(--border);overflow:hidden;overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:900px}
+table{width:100%;border-collapse:collapse;min-width:800px}
 thead{background:var(--surface2);position:sticky;top:0;z-index:5}
-th{
-  padding:11px 14px;text-align:right;font-size:10px;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border);
-  cursor:pointer;user-select:none;transition:color .15s;
-}
+th{padding:11px 14px;text-align:right;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border);cursor:pointer;user-select:none;transition:color .15s}
 th:hover{color:var(--text)}
 th.sort-asc::after{content:' ▲';color:var(--accent)}
 th.sort-desc::after{content:' ▼';color:var(--accent)}
 th:first-child,td:first-child{text-align:left}
-td{
-  padding:9px 14px;text-align:right;border-bottom:1px solid var(--border);
-  white-space:nowrap;font-size:13px;transition:background .1s;
-}
+td{padding:9px 14px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap;font-size:13px;transition:background .1s}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:var(--surface2)}
 tr.ttm-row td{background:rgba(124,109,250,.05);font-weight:600}
 tr.ttm-row td:first-child{color:var(--accent)}
-.ticker-pill{
-  display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px;
-  padding:3px 10px;border-radius:6px;
-}
+.ticker-pill{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px;padding:3px 10px;border-radius:6px}
 .pos{color:var(--green)}
 .neg{color:var(--red)}
 .neutral{color:var(--muted)}
 .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty-state h2{font-size:1.1rem;margin-bottom:8px;color:var(--muted2)}
 .empty-icon{font-size:3rem;margin-bottom:16px;opacity:.3}
-
-/* ── Spinner ── */
-.spinner{
-  display:inline-block;width:13px;height:13px;border:2px solid var(--border2);
-  border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;
-}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── Responsive ── */
 @media(max-width:900px){
   header{padding:12px 16px}
   main{padding:0 16px 40px}
   .charts-row-2,.charts-row-3{grid-template-columns:1fr}
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .market-tabs-bar{padding:0 16px}
 }
 @media(max-width:500px){
   .kpi-grid{grid-template-columns:1fr}
-  .search-wrap input{width:130px}
+  .search-wrap input{width:120px}
 }
-
-/* ── Number animation ── */
-.counting{transition:all .3s}
 </style>
 </head>
 <body>
 
-<!-- ── HEADER ─────────────────────────────────────── -->
+<!-- ── HEADER ── -->
 <header>
   <div class="logo">◈ Portfolio Pulse</div>
   <div class="header-right">
     <div class="search-wrap">
-      <select id="market-select" class="market-select">
+      <select id="market-select" class="market-select" onchange="syncViewToAdd()">
         <option value="NSE">🇮🇳 India</option>
         <option value="US">🇺🇸 US</option>
       </select>
@@ -225,28 +200,33 @@ tr.ttm-row td:first-child{color:var(--accent)}
     <button class="btn btn-sm btn-ghost" onclick="exportCSV()">⬇ CSV</button>
   </div>
 </header>
-<div id="status-bar">Ready — select market, type a ticker and click Add Stock</div>
+
+<div id="status-bar">Select market, type a ticker and click Add Stock</div>
+
+<!-- ── MARKET TABS ── -->
+<div class="market-tabs-bar">
+  <button class="mktab active" id="tab-all"   onclick="setView('all')">🌐 All<span class="mktab-count" id="cnt-all">0</span></button>
+  <button class="mktab"        id="tab-NSE"   onclick="setView('NSE')">🇮🇳 India<span class="mktab-count" id="cnt-NSE">0</span></button>
+  <button class="mktab"        id="tab-US"    onclick="setView('US')">🇺🇸 US<span class="mktab-count" id="cnt-US">0</span></button>
+</div>
 
 <main>
-  <!-- ── KPI STRIP ── -->
   <div class="section-title">Portfolio Overview</div>
-  <div class="kpi-grid" id="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">Stocks Tracked</div><div class="kpi-value" id="kpi-count">0</div><div class="kpi-sub">Active positions</div><div class="kpi-icon">◈</div></div>
-    <div class="kpi-card"><div class="kpi-label">Portfolio TTM Revenue</div><div class="kpi-value" id="kpi-rev">—</div><div class="kpi-sub" id="kpi-rev-sub">Last 4 quarters</div><div class="kpi-icon">₹</div></div>
-    <div class="kpi-card"><div class="kpi-label">Portfolio TTM PAT</div><div class="kpi-value" id="kpi-pat">—</div><div class="kpi-sub" id="kpi-pat-sub">Last 4 quarters</div><div class="kpi-icon">◎</div></div>
-    <div class="kpi-card"><div class="kpi-label">Portfolio Rev Growth</div><div class="kpi-value" id="kpi-rev-growth">—</div><div id="kpi-rev-growth-badge" class="kpi-badge neutral">YoY</div><div class="kpi-sub" id="kpi-rev-growth-sub">Latest Q vs same Q LY</div></div>
-    <div class="kpi-card"><div class="kpi-label">Portfolio PAT Growth</div><div class="kpi-value" id="kpi-pat-growth">—</div><div id="kpi-pat-growth-badge" class="kpi-badge neutral">YoY</div><div class="kpi-sub" id="kpi-pat-growth-sub">Latest Q vs same Q LY</div></div>
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Stocks Tracked</div><div class="kpi-value" id="kpi-count">0</div><div class="kpi-sub" id="kpi-count-sub">Active positions</div><div class="kpi-icon">◈</div></div>
+    <div class="kpi-card"><div class="kpi-label">Portfolio TTM Revenue</div><div class="kpi-value" id="kpi-rev">—</div><div class="kpi-sub" id="kpi-rev-sub">Last 4 quarters</div><div class="kpi-icon">💰</div></div>
+    <div class="kpi-card"><div class="kpi-label">Portfolio TTM Profit</div><div class="kpi-value" id="kpi-pat">—</div><div class="kpi-sub" id="kpi-pat-sub">Last 4 quarters</div><div class="kpi-icon">◎</div></div>
+    <div class="kpi-card"><div class="kpi-label">Portfolio Rev Growth</div><div class="kpi-value" id="kpi-rev-growth">—</div><div id="kpi-rev-growth-badge" class="kpi-badge neutral">YoY</div><div class="kpi-sub" id="kpi-rev-growth-sub"></div></div>
+    <div class="kpi-card"><div class="kpi-label">Portfolio PAT Growth</div><div class="kpi-value" id="kpi-pat-growth">—</div><div id="kpi-pat-growth-badge" class="kpi-badge neutral">YoY</div><div class="kpi-sub" id="kpi-pat-growth-sub"></div></div>
     <div class="kpi-card"><div class="kpi-label">Best Rev Performer</div><div class="kpi-value" id="kpi-best-rev" style="font-size:1.1rem">—</div><div class="kpi-sub" id="kpi-best-rev-sub"></div></div>
     <div class="kpi-card"><div class="kpi-label">Best PAT Performer</div><div class="kpi-value" id="kpi-best-pat" style="font-size:1.1rem">—</div><div class="kpi-sub" id="kpi-best-pat-sub"></div></div>
   </div>
 
-  <!-- ── STOCK CHIPS ── -->
   <div class="section-title">Holdings</div>
   <div class="chips-row" id="chips-row">
     <span style="color:var(--muted);font-size:13px">No stocks added yet</span>
   </div>
 
-  <!-- ── CHARTS ROW 1: Trend lines ── -->
   <div class="section-title">Trend Analysis</div>
   <div class="charts-row charts-row-2">
     <div class="chart-card">
@@ -262,22 +242,19 @@ tr.ttm-row td:first-child{color:var(--accent)}
       <div class="chart-wrap chart-wrap-tall"><canvas id="rev-trend-chart"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-header">
-        <span class="chart-title" id="pat-trend-title">Net Profit Trend</span>
-      </div>
+      <div class="chart-header"><span class="chart-title" id="pat-trend-title">Net Profit Trend</span></div>
       <div class="chart-legend" id="pat-legend"></div>
       <div class="chart-wrap chart-wrap-tall"><canvas id="pat-trend-chart"></canvas></div>
     </div>
   </div>
 
-  <!-- ── CHARTS ROW 2: YoY bars + margin ── -->
   <div class="charts-row charts-row-3">
     <div class="chart-card">
-      <div class="chart-header"><span class="chart-title" id="rev-yoy-title">Revenue YoY % (Latest Q)</span></div>
+      <div class="chart-header"><span class="chart-title" id="rev-yoy-title">Revenue YoY %</span></div>
       <div class="chart-wrap"><canvas id="rev-yoy-chart"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-header"><span class="chart-title" id="pat-yoy-title">PAT YoY % (Latest Q)</span></div>
+      <div class="chart-header"><span class="chart-title" id="pat-yoy-title">PAT YoY %</span></div>
       <div class="chart-wrap"><canvas id="pat-yoy-chart"></canvas></div>
     </div>
     <div class="chart-card">
@@ -286,17 +263,13 @@ tr.ttm-row td:first-child{color:var(--accent)}
     </div>
   </div>
 
-  <!-- ── CHARTS ROW 3: Growth scatter ── -->
   <div class="charts-row charts-row-1">
     <div class="chart-card">
-      <div class="chart-header">
-        <span class="chart-title" id="scatter-title">Rev Growth vs PAT Growth — Quadrant View (Latest Q YoY %)</span>
-      </div>
+      <div class="chart-header"><span class="chart-title" id="scatter-title">Rev Growth vs PAT Growth — Quadrant View</span></div>
       <div class="chart-wrap chart-wrap-tall"><canvas id="scatter-chart"></canvas></div>
     </div>
   </div>
 
-  <!-- ── TABLE ── -->
   <div class="section-title">Quarterly Data</div>
   <div class="table-toolbar">
     <span class="table-title-row">All Quarters</span>
@@ -310,7 +283,6 @@ tr.ttm-row td:first-child{color:var(--accent)}
       <thead>
         <tr>
           <th onclick="sortBy('ticker')">Ticker</th>
-          <th onclick="sortBy('mkt')">Mkt</th>
           <th onclick="sortBy('quarter')">Quarter</th>
           <th onclick="sortBy('revenue')">Revenue</th>
           <th onclick="sortBy('netProfit')">Net Profit</th>
@@ -321,14 +293,13 @@ tr.ttm-row td:first-child{color:var(--accent)}
         </tr>
       </thead>
       <tbody id="data-tbody">
-        <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📊</div><h2>Add stocks to see data</h2><p>Use the search bar above</p></div></td></tr>
+        <tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📊</div><h2>Add stocks to see data</h2><p>Use the search bar above</p></div></td></tr>
       </tbody>
     </table>
   </div>
 </main>
 
 <script>
-// ── Constants ──────────────────────────────────────────────
 const PROXY = 'https://portfolio-proxy-976u.onrender.com';
 const STORAGE_KEY = 'nse_portfolio_v4';
 const COLORS = [
@@ -338,44 +309,69 @@ const COLORS = [
 ];
 
 // ── State ──────────────────────────────────────────────────
-// portfolio: { "NSE:HDFCBANK": { ticker, market, companyName, revenueLabel, profitLabel, currency, unit, quarters } }
-// colorMap:  { "NSE:HDFCBANK": "#7c6dfa" }
-let portfolio = {};
-let colorMap  = {};
-let sortState = { col: null, dir: 1 };
+let portfolio  = {};   // "NSE:HDFCBANK" → { ticker, market, companyName, unit, quarters, … }
+let colorMap   = {};   // "NSE:HDFCBANK" → "#7c6dfa"
+let viewMarket = 'all'; // 'all' | 'NSE' | 'US'
+let sortState  = { col: null, dir: 1 };
 let numQuarters = 8;
-
-// ── Charts ────────────────────────────────────────────────
-const charts = {};
-function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+const charts   = {};
 
 // ── Persist ───────────────────────────────────────────────
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ portfolio, colorMap })); }
 function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) { const d = JSON.parse(raw); portfolio = d.portfolio || {}; colorMap = d.colorMap || {}; }
-    // Migrate old format (plain ticker keys without market prefix)
-    const keys = Object.keys(portfolio);
-    keys.forEach(k => {
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    portfolio = d.portfolio || {};
+    colorMap  = d.colorMap  || {};
+    // Migrate old plain-ticker keys
+    Object.keys(portfolio).forEach(k => {
       if (!k.includes(':')) {
-        const d = portfolio[k];
-        const mkt = d.market || 'NSE';
-        const newKey = `${mkt}:${k}`;
-        portfolio[newKey] = { ...d, market: mkt, ticker: k };
+        const mkt = portfolio[k].market || 'NSE';
+        const nk  = `${mkt}:${k}`;
+        portfolio[nk] = { ...portfolio[k], market: mkt, ticker: k };
+        if (colorMap[k]) { colorMap[nk] = colorMap[k]; delete colorMap[k]; }
         delete portfolio[k];
-        if (colorMap[k]) { colorMap[newKey] = colorMap[k]; delete colorMap[k]; }
       }
     });
   } catch(e) { portfolio = {}; colorMap = {}; }
 }
 
-// ── Color assignment ──────────────────────────────────────
+// ── View / tabs ────────────────────────────────────────────
+function filteredKeys() {
+  const all = Object.keys(portfolio);
+  if (viewMarket === 'all') return all;
+  return all.filter(k => portfolio[k].market === viewMarket);
+}
+
+function setView(m) {
+  viewMarket = m;
+  ['all','NSE','US'].forEach(id => {
+    document.getElementById('tab-' + id).classList.toggle('active', id === m);
+  });
+  // Sync the add-stock dropdown to match the active view
+  if (m !== 'all') document.getElementById('market-select').value = m;
+  render();
+}
+
+function syncViewToAdd() {
+  const m = document.getElementById('market-select').value;
+  setView(m);
+}
+
+function updateTabCounts() {
+  const all  = Object.keys(portfolio);
+  document.getElementById('cnt-all').textContent = all.length;
+  document.getElementById('cnt-NSE').textContent = all.filter(k => portfolio[k].market === 'NSE').length;
+  document.getElementById('cnt-US').textContent  = all.filter(k => portfolio[k].market === 'US').length;
+}
+
+// ── Color ─────────────────────────────────────────────────
 function getColor(key) {
   if (!colorMap[key]) {
     const used = Object.values(colorMap);
-    const next = COLORS.find(c => !used.includes(c)) || COLORS[Object.keys(colorMap).length % COLORS.length];
-    colorMap[key] = next;
+    colorMap[key] = COLORS.find(c => !used.includes(c)) || COLORS[Object.keys(colorMap).length % COLORS.length];
   }
   return colorMap[key];
 }
@@ -391,7 +387,7 @@ async function addStock() {
   const ticker = input.value.trim().toUpperCase();
   if (!ticker) return;
   const key = `${market}:${ticker}`;
-  if (portfolio[key]) { setStatus(`${ticker} is already in your portfolio.`, 'error'); return; }
+  if (portfolio[key]) { setStatus(`${ticker} already in your ${market} portfolio.`, 'error'); return; }
 
   const btn = document.getElementById('add-btn');
   btn.disabled = true;
@@ -414,9 +410,11 @@ async function addStock() {
       quarters:     data.quarters,
     };
     getColor(key);
+    // Auto-switch view to the market just added
+    if (viewMarket !== market) setView(market);
     save();
     input.value = '';
-    setStatus(`✓ Added ${data.companyName || ticker} — ${data.quarters.length} quarters loaded`, 'ok');
+    setStatus(`✓ Added ${data.companyName || ticker} — ${data.quarters.length} quarters`, 'ok');
     render();
   } catch(err) {
     setStatus(`✗ ${err.message}`, 'error');
@@ -424,86 +422,65 @@ async function addStock() {
 }
 
 function removeStock(key) {
-  const d = portfolio[key];
-  const label = d ? d.ticker : key;
-  delete portfolio[key];
-  delete colorMap[key];
+  const label = portfolio[key]?.ticker || key;
+  delete portfolio[key]; delete colorMap[key];
   save(); setStatus(`Removed ${label}`, ''); render();
 }
 
 document.getElementById('ticker-input').addEventListener('keydown', e => { if (e.key === 'Enter') addStock(); });
-
-function setStatus(msg, type) {
-  const el = document.getElementById('status-bar');
-  el.innerHTML = msg; el.className = type;
-}
+function setStatus(msg, type) { const el = document.getElementById('status-bar'); el.innerHTML = msg; el.className = type; }
 
 // ── Quarter helpers ───────────────────────────────────────
-const MONTH_NUM = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
+const MONTH_NUM = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
+function parseQ(label) { const [m,y]=(label||'').split(' '); return parseInt(y)*100+(MONTH_NUM[m]||0); }
 
-function parseQuarterLabel(label) {
-  const [mon, yr] = (label || '').split(' ');
-  return parseInt(yr) * 100 + (MONTH_NUM[mon] || 0);
-}
-
-function getLatestQuarter() {
-  let best = null, bestNum = 0;
-  Object.values(portfolio).forEach(d => {
-    const last = d.quarters[d.quarters.length - 1];
+function getLatestQuarter(keys) {
+  let best = null, bestN = 0;
+  keys.forEach(k => {
+    const last = portfolio[k].quarters.slice(-1)[0];
     if (!last) return;
-    const n = parseQuarterLabel(last.label);
-    if (n > bestNum) { bestNum = n; best = last.label; }
+    const n = parseQ(last.label);
+    if (n > bestN) { bestN = n; best = last.label; }
   });
   return best;
 }
 
-function keysWithLatest() {
-  const latest = getLatestQuarter();
-  if (!latest) return Object.keys(portfolio);
-  return Object.keys(portfolio).filter(k => portfolio[k].quarters.some(q => q.label === latest));
+function keysWithLatest(keys) {
+  const lq = getLatestQuarter(keys);
+  if (!lq) return keys;
+  return keys.filter(k => portfolio[k].quarters.some(q => q.label === lq));
 }
 
-function idxOf(key, label) {
-  return portfolio[key].quarters.findIndex(q => q.label === label);
-}
+function idxOf(key, label) { return portfolio[key].quarters.findIndex(q => q.label === label); }
 
-// ── YoY helpers ───────────────────────────────────────────
+// ── Math helpers ──────────────────────────────────────────
 function yoy(quarters, field, idx) {
   if (idx < 4) return null;
-  const curr = quarters[idx][field], prev = quarters[idx - 4][field];
+  const curr = quarters[idx][field], prev = quarters[idx-4][field];
   if (!prev) return null;
   return ((curr - prev) / Math.abs(prev)) * 100;
 }
+function ttm(quarters, field) { return quarters.slice(-4).reduce((s,q) => s+(q[field]||0), 0); }
 
-function ttm(quarters, field) {
-  return quarters.slice(-4).reduce((s, q) => s + (q[field] || 0), 0);
-}
-
-// ── Format helpers ────────────────────────────────────────
-function fmt(n, dec = 0) {
-  if (n == null || isNaN(n)) return '—';
-  return n.toLocaleString('en-IN', { maximumFractionDigits: dec, minimumFractionDigits: dec });
-}
+// ── Format ────────────────────────────────────────────────
+function fmt(n) { if (n==null||isNaN(n)) return '—'; return n.toLocaleString('en-IN',{maximumFractionDigits:0}); }
 function fmtK(n, market) {
-  if (n == null || isNaN(n)) return '—';
+  if (n==null||isNaN(n)) return '—';
   if (market === 'US') {
-    // values in $M — show in B or M
-    if (Math.abs(n) >= 1000) return (n / 1000).toFixed(1) + 'B';
-    return n.toFixed(0) + 'M';
+    if (Math.abs(n) >= 1000) return (n/1000).toFixed(1)+'B';
+    return n.toFixed(0)+'M';
   }
-  // NSE values in ₹ Cr
-  if (Math.abs(n) >= 100000) return (n / 100000).toFixed(1) + 'L';
-  if (Math.abs(n) >= 1000)   return (n / 1000).toFixed(1) + 'K';
-  return fmt(n, 0);
+  if (Math.abs(n) >= 100000) return (n/100000).toFixed(1)+'L';
+  if (Math.abs(n) >= 1000)   return (n/1000).toFixed(1)+'K';
+  return n.toFixed(0);
 }
-function fmtPct(n) {
-  if (n == null) return '—';
-  return (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
-}
-function pctCls(n) { return n == null ? 'neutral' : n >= 0 ? 'pos' : 'neg'; }
+function fmtPct(n) { if (n==null) return '—'; return (n>=0?'+':'')+n.toFixed(1)+'%'; }
+function pctCls(n) { return n==null?'neutral':n>=0?'pos':'neg'; }
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
 
 // ── Master render ─────────────────────────────────────────
 function render() {
+  updateTabCounts();
   renderKPIs();
   renderChips();
   renderTrendCharts();
@@ -515,115 +492,93 @@ function render() {
 
 // ── KPIs ──────────────────────────────────────────────────
 function renderKPIs() {
-  const keys = Object.keys(portfolio);
+  const keys = filteredKeys();
   const n = keys.length;
   document.getElementById('kpi-count').textContent = n;
+  const viewLabel = viewMarket === 'NSE' ? '🇮🇳 India' : viewMarket === 'US' ? '🇺🇸 US' : 'All';
+  document.getElementById('kpi-count-sub').textContent = viewLabel + ' portfolio';
 
-  if (!n) {
-    ['kpi-rev','kpi-pat','kpi-rev-growth','kpi-pat-growth','kpi-best-rev','kpi-best-pat'].forEach(id => document.getElementById(id).textContent = '—');
-    ['kpi-best-rev-sub','kpi-best-pat-sub'].forEach(id => document.getElementById(id).textContent = '');
-    return;
-  }
+  const blank = () => { ['kpi-rev','kpi-pat','kpi-rev-growth','kpi-pat-growth','kpi-best-rev','kpi-best-pat'].forEach(id=>document.getElementById(id).textContent='—'); };
+  if (!n) { blank(); return; }
 
-  const latestQ   = getLatestQuarter();
-  const qualified = keysWithLatest();
+  const markets  = [...new Set(keys.map(k=>portfolio[k].market))];
+  const soloMkt  = markets.length === 1 ? markets[0] : null;
+  const latestQ  = getLatestQuarter(keys);
+  const qualified = keysWithLatest(keys);
 
-  // Check if mixed currencies
-  const markets = [...new Set(keys.map(k => portfolio[k].market))];
-  const mixed   = markets.length > 1;
+  let ttmRev = 0, ttmPat = 0;
+  keys.forEach(k => { const q=portfolio[k].quarters; ttmRev+=ttm(q,'revenue'); ttmPat+=ttm(q,'netProfit'); });
 
-  let totalTTMRev = 0, totalTTMPat = 0;
-  keys.forEach(k => {
-    const q = portfolio[k].quarters;
-    totalTTMRev += ttm(q, 'revenue');
-    totalTTMPat += ttm(q, 'netProfit');
-  });
-
-  let totalLatestRev = 0, totalLatestPat = 0, totalPrevRev = 0, totalPrevPat = 0;
-  let bestRevK = null, bestRevV = -Infinity, bestPatK = null, bestPatV = -Infinity;
-
-  qualified.forEach(k => {
-    const q = portfolio[k].quarters;
-    const ci = latestQ ? idxOf(k, latestQ) : q.length - 1;
-    if (ci >= 4) {
-      totalLatestRev += q[ci].revenue;   totalPrevRev += q[ci - 4].revenue;
-      totalLatestPat += q[ci].netProfit; totalPrevPat += q[ci - 4].netProfit;
-    }
-    const rv = ci >= 0 ? yoy(q, 'revenue',   ci) : null;
-    const pv = ci >= 0 ? yoy(q, 'netProfit', ci) : null;
-    if (rv != null && rv > bestRevV) { bestRevV = rv; bestRevK = k; }
-    if (pv != null && pv > bestPatV) { bestPatV = pv; bestPatK = k; }
-  });
-
-  const soloMarket = mixed ? null : (keys.length ? portfolio[keys[0]].market : 'NSE');
-  if (mixed) {
+  if (soloMkt) {
+    const unit = portfolio[keys[0]].unit;
+    document.getElementById('kpi-rev').textContent = fmtK(ttmRev, soloMkt);
+    document.getElementById('kpi-pat').textContent = fmtK(ttmPat, soloMkt);
+    document.getElementById('kpi-rev-sub').textContent = unit + ' (last 4Q)';
+    document.getElementById('kpi-pat-sub').textContent = unit + ' (last 4Q)';
+  } else {
     document.getElementById('kpi-rev').textContent = '—';
     document.getElementById('kpi-pat').textContent = '—';
     document.getElementById('kpi-rev-sub').textContent = 'Mixed currencies — see table';
     document.getElementById('kpi-pat-sub').textContent = 'Mixed currencies — see table';
-  } else {
-    const unit = keys.length ? portfolio[keys[0]].unit : '₹ Cr';
-    document.getElementById('kpi-rev').textContent = fmtK(totalTTMRev, soloMarket);
-    document.getElementById('kpi-pat').textContent = fmtK(totalTTMPat, soloMarket);
-    document.getElementById('kpi-rev-sub').textContent = unit + ' (last 4 quarters)';
-    document.getElementById('kpi-pat-sub').textContent = unit + ' (last 4 quarters)';
   }
 
-  const revGrowth = totalPrevRev ? ((totalLatestRev - totalPrevRev) / Math.abs(totalPrevRev)) * 100 : null;
-  const patGrowth = totalPrevPat ? ((totalLatestPat - totalPrevPat) / Math.abs(totalPrevPat)) * 100 : null;
+  let latestRev=0,latestPat=0,prevRev=0,prevPat=0,bestRevK=null,bestRevV=-Infinity,bestPatK=null,bestPatV=-Infinity;
+  qualified.forEach(k => {
+    const q=portfolio[k].quarters;
+    const ci = latestQ ? idxOf(k,latestQ) : q.length-1;
+    if (ci>=4) { latestRev+=q[ci].revenue; prevRev+=q[ci-4].revenue; latestPat+=q[ci].netProfit; prevPat+=q[ci-4].netProfit; }
+    const rv=ci>=0?yoy(q,'revenue',ci):null, pv=ci>=0?yoy(q,'netProfit',ci):null;
+    if (rv!=null&&rv>bestRevV){bestRevV=rv;bestRevK=k;}
+    if (pv!=null&&pv>bestPatV){bestPatV=pv;bestPatK=k;}
+  });
 
-  document.getElementById('kpi-rev-growth').textContent = revGrowth != null ? fmtPct(revGrowth) : '—';
-  document.getElementById('kpi-pat-growth').textContent = patGrowth != null ? fmtPct(patGrowth) : '—';
+  const rg = prevRev ? ((latestRev-prevRev)/Math.abs(prevRev))*100 : null;
+  const pg = prevPat ? ((latestPat-prevPat)/Math.abs(prevPat))*100 : null;
+  document.getElementById('kpi-rev-growth').textContent = rg!=null?fmtPct(rg):'—';
+  document.getElementById('kpi-pat-growth').textContent = pg!=null?fmtPct(pg):'—';
 
-  const qLabel = latestQ || 'YoY';
-  const qNote  = `${qualified.length}/${n} stocks · ${qLabel}`;
+  const qNote = `${qualified.length}/${n} stocks · ${latestQ||'YoY'}`;
   document.getElementById('kpi-rev-growth-sub').textContent = qNote;
   document.getElementById('kpi-pat-growth-sub').textContent = qNote;
 
-  ['kpi-rev-growth-badge','kpi-pat-growth-badge'].forEach((id, i) => {
-    const v = i === 0 ? revGrowth : patGrowth;
-    const el = document.getElementById(id);
-    el.textContent = qLabel; el.className = 'kpi-badge ' + (v == null ? 'neutral' : v >= 0 ? 'up' : 'down');
+  ['kpi-rev-growth-badge','kpi-pat-growth-badge'].forEach((id,i) => {
+    const v = i===0?rg:pg, el=document.getElementById(id);
+    el.textContent = latestQ||'YoY';
+    el.className = 'kpi-badge '+(v==null?'neutral':v>=0?'up':'down');
   });
 
-  const bestRevTicker = bestRevK ? portfolio[bestRevK].ticker : null;
-  const bestPatTicker = bestPatK ? portfolio[bestPatK].ticker : null;
-  document.getElementById('kpi-best-rev').textContent = bestRevTicker ? `${flag(portfolio[bestRevK].market)} ${bestRevTicker}` : '—';
-  document.getElementById('kpi-best-rev-sub').textContent = bestRevK ? fmtPct(bestRevV) + ' revenue growth' : '';
-  document.getElementById('kpi-best-pat').textContent = bestPatTicker ? `${flag(portfolio[bestPatK].market)} ${bestPatTicker}` : '—';
-  document.getElementById('kpi-best-pat-sub').textContent = bestPatK ? fmtPct(bestPatV) + ' PAT growth' : '';
+  document.getElementById('kpi-best-rev').textContent = bestRevK ? portfolio[bestRevK].ticker : '—';
+  document.getElementById('kpi-best-rev-sub').textContent = bestRevK ? fmtPct(bestRevV)+' rev growth' : '';
+  document.getElementById('kpi-best-pat').textContent = bestPatK ? portfolio[bestPatK].ticker : '—';
+  document.getElementById('kpi-best-pat-sub').textContent = bestPatK ? fmtPct(bestPatV)+' PAT growth' : '';
 }
 
-// ── Chips with sparklines ─────────────────────────────────
+// ── Chips ─────────────────────────────────────────────────
 function renderChips() {
   const row = document.getElementById('chips-row');
-  const keys = Object.keys(portfolio);
-  if (!keys.length) { row.innerHTML = '<span style="color:var(--muted);font-size:13px">No stocks added yet</span>'; return; }
-
+  const keys = filteredKeys();
+  if (!keys.length) {
+    const label = viewMarket==='NSE'?'Indian':viewMarket==='US'?'US':'';
+    row.innerHTML = `<span style="color:var(--muted);font-size:13px">No ${label} stocks added yet</span>`;
+    return;
+  }
+  const latestQ = getLatestQuarter(keys);
   row.innerHTML = '';
-  const latestQ = getLatestQuarter();
-
   keys.forEach(key => {
-    const d = portfolio[key];
-    const color = getColor(key);
-    const q = d.quarters;
-    const last = q.length - 1;
-    const revYoY = yoy(q, 'revenue', last);
-    const pctText = revYoY != null ? fmtPct(revYoY) : '';
-    const pctCls_ = pctCls(revYoY);
-    const hasPending = latestQ && !q.some(x => x.label === latestQ);
+    const d=portfolio[key], color=getColor(key), q=d.quarters;
+    const revYoY=yoy(q,'revenue',q.length-1);
+    const hasPending = latestQ && !q.some(x=>x.label===latestQ);
     const sparkId = `spark-${safeId(key)}`;
-
     const chip = document.createElement('div');
     chip.className = 'chip';
     chip.innerHTML = `
       <div class="chip-info">
         <div class="chip-ticker" style="color:${color}">
-          ${flag(d.market)} ${d.ticker}
-          <span class="chip-pct ${pctCls_}">${pctText}</span>
-          ${hasPending ? `<span title="${q[last]?.label} — awaiting ${latestQ}" style="font-size:10px;color:var(--yellow);font-weight:600;margin-left:2px">⏳</span>` : ''}
+          ${d.ticker}
+          <span class="chip-pct ${pctCls(revYoY)}">${revYoY!=null?fmtPct(revYoY):''}</span>
+          ${hasPending?`<span title="Pending ${latestQ}" style="font-size:10px;color:var(--yellow);margin-left:2px">⏳</span>`:''}
         </div>
-        <div class="chip-name">${d.companyName}${hasPending ? ` · pending ${latestQ}` : ''}</div>
+        <div class="chip-name">${d.companyName}${hasPending?` · pending ${latestQ}`:''}</div>
       </div>
       <canvas class="chip-sparkline" id="${sparkId}"></canvas>
       <span class="chip-remove" onclick="removeStock('${key}')" title="Remove">×</span>
@@ -637,361 +592,218 @@ function drawSparkline(key, color) {
   const sparkId = `spark-${safeId(key)}`;
   const canvas = document.getElementById(sparkId);
   if (!canvas) return;
-  const q = portfolio[key].quarters;
-  const vals = q.slice(-8).map(x => x.revenue);
+  const q = portfolio[key].quarters.slice(-8);
   destroyChart(sparkId);
   charts[sparkId] = new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels: q.slice(-8).map(x => x.label),
-      datasets: [{ data: vals, borderColor: color, borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true,
-        backgroundColor: (ctx) => {
-          const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 32);
-          g.addColorStop(0, color + '40'); g.addColorStop(1, color + '00'); return g;
-        }
-      }]
-    },
-    options: { responsive: false, plugins: { legend: { display: false }, tooltip: { enabled: false } },
-      scales: { x: { display: false }, y: { display: false } }, animation: false }
+    type:'line',
+    data:{ labels:q.map(x=>x.label), datasets:[{ data:q.map(x=>x.revenue), borderColor:color, borderWidth:2, pointRadius:0, tension:0.4, fill:true,
+      backgroundColor:(ctx)=>{ const g=ctx.chart.ctx.createLinearGradient(0,0,0,32); g.addColorStop(0,color+'40'); g.addColorStop(1,color+'00'); return g; }
+    }]},
+    options:{ responsive:false, plugins:{legend:{display:false},tooltip:{enabled:false}}, scales:{x:{display:false},y:{display:false}}, animation:false }
   });
 }
 
 // ── Trend charts ──────────────────────────────────────────
 function setQuarters(n) {
   numQuarters = n;
-  document.querySelectorAll('#rev-quarters-toggle .q-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent === n + 'Q');
-  });
+  document.querySelectorAll('#rev-quarters-toggle .q-btn').forEach(b=>b.classList.toggle('active',b.textContent===n+'Q'));
   renderTrendCharts();
 }
 
 function buildTrendData(field) {
-  const keys = Object.keys(portfolio);
+  const keys = filteredKeys();
   if (!keys.length) return null;
-
   let labels = [];
-  keys.forEach(k => {
-    portfolio[k].quarters.slice(-numQuarters).forEach(x => { if (!labels.includes(x.label)) labels.push(x.label); });
-  });
+  keys.forEach(k => { portfolio[k].quarters.slice(-numQuarters).forEach(x=>{ if(!labels.includes(x.label)) labels.push(x.label); }); });
   labels = labels.slice(-numQuarters);
-
   const datasets = keys.map(k => {
-    const d = portfolio[k];
-    const color = getColor(k);
-    const data = labels.map(lbl => {
-      const found = d.quarters.find(x => x.label === lbl);
-      return found ? found[field] : null;
-    });
+    const d=portfolio[k], color=getColor(k);
     return {
-      label: `${flag(d.market)} ${d.ticker}`,
-      data,
-      borderColor: color,
-      backgroundColor: color + '18',
-      borderWidth: 2.5,
-      pointBackgroundColor: color,
-      pointRadius: 3,
-      pointHoverRadius: 6,
-      tension: 0.35,
-      fill: false,
-      spanGaps: true,
+      label: d.ticker,
+      data: labels.map(lbl=>{ const f=d.quarters.find(x=>x.label===lbl); return f?f[field]:null; }),
+      borderColor:color, backgroundColor:color+'18', borderWidth:2.5,
+      pointBackgroundColor:color, pointRadius:3, pointHoverRadius:6, tension:0.35, fill:false, spanGaps:true,
     };
   });
-
   return { labels, datasets };
 }
 
-const TREND_OPTIONS = {
-  responsive: true, maintainAspectRatio: false,
-  interaction: { mode: 'index', intersect: false },
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor: '#1e2540', borderColor: '#2e3a5c', borderWidth: 1,
-      titleColor: '#e8eaf6', bodyColor: '#8a9abf', padding: 12,
-    }
-  },
-  scales: {
-    x: { grid: { color: '#1e2540' }, ticks: { color: '#6b7aaa', font: { size: 11 }, maxTicksLimit: 8 } },
-    y: { grid: { color: '#1e2540' }, ticks: { color: '#6b7aaa', font: { size: 11 },
-      callback: v => v >= 1000 ? (v/1000).toFixed(0) + 'K' : v } }
+const TREND_OPT = {
+  responsive:true, maintainAspectRatio:false,
+  interaction:{mode:'index',intersect:false},
+  plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#1e2540',borderColor:'#2e3a5c',borderWidth:1,titleColor:'#e8eaf6',bodyColor:'#8a9abf',padding:12} },
+  scales:{
+    x:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',font:{size:11},maxTicksLimit:8}},
+    y:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',font:{size:11},callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}}
   }
 };
 
 function renderTrendCharts() {
-  const keys = Object.keys(portfolio);
-  const revData = buildTrendData('revenue');
-  const patData = buildTrendData('netProfit');
-
-  // Build chart title including unit info
-  const units = [...new Set(keys.map(k => portfolio[k].unit))];
-  const unitStr = units.join(' / ') || '';
-  document.getElementById('rev-trend-title').textContent = `Revenue Trend${unitStr ? ' (' + unitStr + ')' : ''}`;
-  document.getElementById('pat-trend-title').textContent = `Net Profit Trend${unitStr ? ' (' + unitStr + ')' : ''}`;
+  const keys = filteredKeys();
+  const units = [...new Set(keys.map(k=>portfolio[k].unit))];
+  const unitStr = units.join(' / ');
+  document.getElementById('rev-trend-title').textContent = `Revenue Trend${unitStr?' ('+unitStr+')':''}`;
+  document.getElementById('pat-trend-title').textContent = `Net Profit Trend${unitStr?' ('+unitStr+')':''}`;
 
   destroyChart('rev-trend'); destroyChart('pat-trend');
+  const legHtml = keys.map(k=>`<span class="legend-item"><span class="legend-dot" style="background:${getColor(k)}"></span>${portfolio[k].ticker}</span>`).join('');
 
-  const legendHtml = keys.map(k => `<span class="legend-item"><span class="legend-dot" style="background:${getColor(k)}"></span>${flag(portfolio[k].market)} ${portfolio[k].ticker}</span>`).join('');
-
-  if (revData) {
-    charts['rev-trend'] = new Chart(document.getElementById('rev-trend-chart'), { type: 'line', data: revData, options: TREND_OPTIONS });
-    document.getElementById('rev-legend').innerHTML = legendHtml;
-  }
-  if (patData) {
-    charts['pat-trend'] = new Chart(document.getElementById('pat-trend-chart'), { type: 'line', data: patData, options: TREND_OPTIONS });
-    document.getElementById('pat-legend').innerHTML = legendHtml;
-  }
+  const revData = buildTrendData('revenue');
+  if (revData) { charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:TREND_OPT}); document.getElementById('rev-legend').innerHTML=legHtml; }
+  const patData = buildTrendData('netProfit');
+  if (patData) { charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:TREND_OPT}); document.getElementById('pat-legend').innerHTML=legHtml; }
 }
 
 // ── YoY bar charts ────────────────────────────────────────
-const BAR_OPTIONS = (unit = '%') => ({
-  responsive: true, maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: { backgroundColor: '#1e2540', borderColor: '#2e3a5c', borderWidth: 1,
-      titleColor: '#e8eaf6', bodyColor: '#8a9abf',
-      callbacks: { label: ctx => ` ${ctx.parsed.y != null ? (ctx.parsed.y >= 0 ? '+' : '') + ctx.parsed.y.toFixed(1) : 'N/A'}${unit}` } }
-  },
-  scales: {
-    x: { grid: { display: false }, ticks: { color: '#6b7aaa', font: { size: 11 } } },
-    y: { grid: { color: '#1e2540' }, ticks: { color: '#6b7aaa', font: { size: 11 }, callback: v => v + unit } }
+const BAR_OPT = ()=>({
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{display:false}, tooltip:{backgroundColor:'#1e2540',borderColor:'#2e3a5c',borderWidth:1,titleColor:'#e8eaf6',bodyColor:'#8a9abf',
+    callbacks:{label:ctx=>` ${ctx.parsed.y!=null?(ctx.parsed.y>=0?'+':'')+ctx.parsed.y.toFixed(1):'N/A'}%`}} },
+  scales:{
+    x:{grid:{display:false},ticks:{color:'#6b7aaa',font:{size:11}}},
+    y:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',font:{size:11},callback:v=>v+'%'}}
   }
 });
 
 function renderYoYCharts() {
-  const keys = Object.keys(portfolio);
   destroyChart('rev-yoy'); destroyChart('pat-yoy');
+  const keys = filteredKeys();
   if (!keys.length) return;
+  const latestQ = getLatestQuarter(keys);
+  const qualified = keysWithLatest(keys);
+  const ql = latestQ ? ` — ${latestQ}` : '';
+  document.getElementById('rev-yoy-title').textContent = `Revenue YoY %${ql}`;
+  document.getElementById('pat-yoy-title').textContent = `PAT YoY %${ql}`;
+  document.getElementById('scatter-title').textContent = `Rev vs PAT Growth — Quadrant${ql}`;
 
-  const latestQ   = getLatestQuarter();
-  const qualified = keysWithLatest();
-  const qlabel    = latestQ ? ` — ${latestQ}` : '';
+  const labels  = qualified.map(k=>portfolio[k].ticker);
+  const colors  = qualified.map(k=>getColor(k));
+  const alphas  = colors.map(c=>c+'bb');
+  const revData = qualified.map(k=>{ const q=portfolio[k].quarters,ci=idxOf(k,latestQ); return ci>=0?yoy(q,'revenue',ci):null; });
+  const patData = qualified.map(k=>{ const q=portfolio[k].quarters,ci=idxOf(k,latestQ); return ci>=0?yoy(q,'netProfit',ci):null; });
 
-  document.getElementById('rev-yoy-title').textContent = `Revenue YoY %${qlabel}`;
-  document.getElementById('pat-yoy-title').textContent = `PAT YoY %${qlabel}`;
-  document.getElementById('scatter-title').textContent = `Rev vs PAT Growth — Quadrant${qlabel}`;
-
-  const barLabels = qualified.map(k => `${flag(portfolio[k].market)} ${portfolio[k].ticker}`);
-  const revData   = qualified.map(k => { const q = portfolio[k].quarters; const ci = idxOf(k, latestQ); return ci >= 0 ? yoy(q, 'revenue', ci) : null; });
-  const patData   = qualified.map(k => { const q = portfolio[k].quarters; const ci = idxOf(k, latestQ); return ci >= 0 ? yoy(q, 'netProfit', ci) : null; });
-  const colors    = qualified.map(k => getColor(k));
-  const alphaColors = colors.map(c => c + 'bb');
-
-  charts['rev-yoy'] = new Chart(document.getElementById('rev-yoy-chart'), {
-    type: 'bar',
-    data: { labels: barLabels, datasets: [{ data: revData.map(v => v != null ? parseFloat(v.toFixed(1)) : null), backgroundColor: alphaColors, borderColor: colors, borderWidth: 1.5, borderRadius: 7 }] },
-    options: BAR_OPTIONS('%')
-  });
-
-  charts['pat-yoy'] = new Chart(document.getElementById('pat-yoy-chart'), {
-    type: 'bar',
-    data: { labels: barLabels, datasets: [{ data: patData.map(v => v != null ? parseFloat(v.toFixed(1)) : null), backgroundColor: alphaColors, borderColor: colors, borderWidth: 1.5, borderRadius: 7 }] },
-    options: BAR_OPTIONS('%')
-  });
+  charts['rev-yoy'] = new Chart(document.getElementById('rev-yoy-chart'),{type:'bar',data:{labels,datasets:[{data:revData.map(v=>v!=null?parseFloat(v.toFixed(1)):null),backgroundColor:alphas,borderColor:colors,borderWidth:1.5,borderRadius:7}]},options:BAR_OPT()});
+  charts['pat-yoy'] = new Chart(document.getElementById('pat-yoy-chart'),{type:'bar',data:{labels,datasets:[{data:patData.map(v=>v!=null?parseFloat(v.toFixed(1)):null),backgroundColor:alphas,borderColor:colors,borderWidth:1.5,borderRadius:7}]},options:BAR_OPT()});
 }
 
-// ── Margin trend ──────────────────────────────────────────
+// ── Margin chart ──────────────────────────────────────────
 function renderMarginChart() {
   destroyChart('margin');
-  const keys = Object.keys(portfolio);
+  const keys = filteredKeys();
   if (!keys.length) return;
-
-  let labels = [];
-  keys.forEach(k => { portfolio[k].quarters.slice(-8).forEach(x => { if (!labels.includes(x.label)) labels.push(x.label); }); });
-  labels = labels.slice(-8);
-
-  const datasets = keys.map(k => {
-    const d = portfolio[k];
-    const color = getColor(k);
-    return {
-      label: `${flag(d.market)} ${d.ticker}`,
-      data: labels.map(lbl => { const f = d.quarters.find(x => x.label === lbl); return f ? f.margin : null; }),
-      borderColor: color, backgroundColor: color + '22', borderWidth: 2, pointRadius: 3,
-      pointHoverRadius: 6, tension: 0.35, spanGaps: true,
-    };
-  });
-
-  charts['margin'] = new Chart(document.getElementById('margin-chart'), {
-    type: 'line',
-    data: { labels, datasets },
-    options: { ...TREND_OPTIONS, plugins: { ...TREND_OPTIONS.plugins,
-        tooltip: { ...TREND_OPTIONS.plugins.tooltip, callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1) || 0}%` } } },
-      scales: { ...TREND_OPTIONS.scales, y: { ...TREND_OPTIONS.scales.y, ticks: { ...TREND_OPTIONS.scales.y.ticks, callback: v => v + '%' } } } }
-  });
+  let labels=[];
+  keys.forEach(k=>{ portfolio[k].quarters.slice(-8).forEach(x=>{ if(!labels.includes(x.label)) labels.push(x.label); }); });
+  labels=labels.slice(-8);
+  const datasets=keys.map(k=>{ const d=portfolio[k],color=getColor(k); return {
+    label:d.ticker, data:labels.map(lbl=>{ const f=d.quarters.find(x=>x.label===lbl); return f?f.margin:null; }),
+    borderColor:color, backgroundColor:color+'22', borderWidth:2, pointRadius:3, pointHoverRadius:6, tension:0.35, spanGaps:true
+  };});
+  charts['margin']=new Chart(document.getElementById('margin-chart'),{type:'line',data:{labels,datasets},
+    options:{...TREND_OPT,plugins:{...TREND_OPT.plugins,tooltip:{...TREND_OPT.plugins.tooltip,callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)||0}%`}}},
+      scales:{...TREND_OPT.scales,y:{...TREND_OPT.scales.y,ticks:{...TREND_OPT.scales.y.ticks,callback:v=>v+'%'}}}}});
 }
 
 // ── Scatter / quadrant ────────────────────────────────────
 function renderScatter() {
   destroyChart('scatter');
-  const keys = Object.keys(portfolio);
+  const keys = filteredKeys();
   if (!keys.length) return;
+  const latestQ = getLatestQuarter(keys);
+  const qualified = keysWithLatest(keys);
+  const points = qualified.map(k=>{
+    const d=portfolio[k],q=d.quarters,ci=idxOf(k,latestQ);
+    const rv=ci>=0?yoy(q,'revenue',ci):null, pv=ci>=0?yoy(q,'netProfit',ci):null;
+    return {x:rv!=null?parseFloat(rv.toFixed(1)):null,y:pv!=null?parseFloat(pv.toFixed(1)):null,label:d.ticker,color:getColor(k)};
+  }).filter(p=>p.x!=null&&p.y!=null);
 
-  const latestQ2   = getLatestQuarter();
-  const qualified2 = keysWithLatest();
-  const points = qualified2.map(k => {
-    const d  = portfolio[k];
-    const q  = d.quarters;
-    const ci = idxOf(k, latestQ2);
-    const rv = ci >= 0 ? yoy(q, 'revenue',   ci) : null;
-    const pv = ci >= 0 ? yoy(q, 'netProfit', ci) : null;
-    return { x: rv != null ? parseFloat(rv.toFixed(1)) : null, y: pv != null ? parseFloat(pv.toFixed(1)) : null,
-             label: `${flag(d.market)} ${d.ticker}`, color: getColor(k) };
-  }).filter(p => p.x != null && p.y != null);
-
-  const datasets = points.map(p => ({
-    label: p.label,
-    data: [{ x: p.x, y: p.y }],
-    backgroundColor: p.color + 'cc',
-    borderColor: p.color,
-    borderWidth: 2,
-    pointRadius: 12,
-    pointHoverRadius: 16,
-  }));
-
-  charts['scatter'] = new Chart(document.getElementById('scatter-chart'), {
-    type: 'scatter',
-    data: { datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { backgroundColor: '#1e2540', borderColor: '#2e3a5c', borderWidth: 1,
-          titleColor: '#e8eaf6', bodyColor: '#8a9abf',
-          callbacks: { label: ctx => ` ${ctx.dataset.label}: Rev ${ctx.parsed.x >= 0 ? '+' : ''}${ctx.parsed.x}% / PAT ${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y}%` } }
-      },
-      scales: {
-        x: { grid: { color: '#1e2540' }, ticks: { color: '#6b7aaa', callback: v => v + '%' },
-          title: { display: true, text: 'Revenue YoY %', color: '#6b7aaa' } },
-        y: { grid: { color: '#1e2540' }, ticks: { color: '#6b7aaa', callback: v => v + '%' },
-          title: { display: true, text: 'PAT YoY %', color: '#6b7aaa' } }
+  charts['scatter']=new Chart(document.getElementById('scatter-chart'),{
+    type:'scatter',
+    data:{datasets:points.map(p=>({label:p.label,data:[{x:p.x,y:p.y}],backgroundColor:p.color+'cc',borderColor:p.color,borderWidth:2,pointRadius:12,pointHoverRadius:16}))},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e2540',borderColor:'#2e3a5c',borderWidth:1,titleColor:'#e8eaf6',bodyColor:'#8a9abf',
+        callbacks:{label:ctx=>` ${ctx.dataset.label}: Rev ${ctx.parsed.x>=0?'+':''}${ctx.parsed.x}% / PAT ${ctx.parsed.y>=0?'+':''}${ctx.parsed.y}%`}}},
+      scales:{
+        x:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',callback:v=>v+'%'},title:{display:true,text:'Revenue YoY %',color:'#6b7aaa'}},
+        y:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',callback:v=>v+'%'},title:{display:true,text:'PAT YoY %',color:'#6b7aaa'}}
       }
     },
-    plugins: [{
-      id: 'quadrant-lines',
-      afterDraw(chart) {
-        const { ctx, chartArea: { left, right, top, bottom }, scales: { x, y } } = chart;
-        const cx = x.getPixelForValue(0), cy = y.getPixelForValue(0);
-        ctx.save();
-        ctx.setLineDash([6, 4]);
-        ctx.strokeStyle = '#2e3a5c';
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(cx, top); ctx.lineTo(cx, bottom); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(left, cy); ctx.lineTo(right, cy); ctx.stroke();
-        ctx.setLineDash([]); ctx.font = '10px Segoe UI'; ctx.fillStyle = '#6b7aaa';
-        ctx.fillText('Star 🌟', cx + 8, top + 16);
-        ctx.fillText('Cash Cow 💰', left + 8, top + 16);
-        ctx.fillText('Turnaround ⚡', cx + 8, bottom - 8);
-        ctx.fillText('Laggard ⚠', left + 8, bottom - 8);
-        chart.data.datasets.forEach(ds => {
-          const pt = ds.data[0];
-          const px = x.getPixelForValue(pt.x), py = y.getPixelForValue(pt.y);
-          ctx.fillStyle = ds.borderColor;
-          ctx.font = 'bold 11px Segoe UI';
-          ctx.fillText(ds.label, px + 14, py + 4);
-        });
-        ctx.restore();
-      }
-    }]
+    plugins:[{id:'ql',afterDraw(chart){
+      const{ctx,chartArea:{left,right,top,bottom},scales:{x,y}}=chart;
+      const cx=x.getPixelForValue(0),cy=y.getPixelForValue(0);
+      ctx.save(); ctx.setLineDash([6,4]); ctx.strokeStyle='#2e3a5c'; ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(cx,top);ctx.lineTo(cx,bottom);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(left,cy);ctx.lineTo(right,cy);ctx.stroke();
+      ctx.setLineDash([]);ctx.font='10px Segoe UI';ctx.fillStyle='#6b7aaa';
+      ctx.fillText('Star 🌟',cx+8,top+16); ctx.fillText('Cash Cow 💰',left+8,top+16);
+      ctx.fillText('Turnaround ⚡',cx+8,bottom-8); ctx.fillText('Laggard ⚠',left+8,bottom-8);
+      chart.data.datasets.forEach(ds=>{ const pt=ds.data[0],px=x.getPixelForValue(pt.x),py=y.getPixelForValue(pt.y); ctx.fillStyle=ds.borderColor; ctx.font='bold 11px Segoe UI'; ctx.fillText(ds.label,px+14,py+4); });
+      ctx.restore();
+    }}]
   });
 }
 
 // ── Table ─────────────────────────────────────────────────
 function sortBy(col) {
-  if (sortState.col === col) sortState.dir *= -1;
-  else { sortState.col = col; sortState.dir = 1; }
-  document.querySelectorAll('th').forEach(th => { th.classList.remove('sort-asc','sort-desc'); });
-  const cols = ['ticker','mkt','quarter','revenue','netProfit','eps','margin','revYoY','patYoY'];
-  const idx = cols.indexOf(col);
-  const ths = document.querySelectorAll('th');
-  if (idx >= 0) ths[idx].classList.add(sortState.dir === 1 ? 'sort-asc' : 'sort-desc');
+  if (sortState.col===col) sortState.dir*=-1; else { sortState.col=col; sortState.dir=1; }
+  document.querySelectorAll('th').forEach(th=>th.classList.remove('sort-asc','sort-desc'));
+  const idx=['ticker','quarter','revenue','netProfit','eps','margin','revYoY','patYoY'].indexOf(col);
+  const ths=document.querySelectorAll('th');
+  if (idx>=0) ths[idx].classList.add(sortState.dir===1?'sort-asc':'sort-desc');
   renderTable();
 }
 
 function renderTable() {
   const tbody = document.getElementById('data-tbody');
-  const keys = Object.keys(portfolio);
+  const keys = filteredKeys();
   const showTTM = document.getElementById('show-ttm').checked;
 
   if (!keys.length) {
-    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📊</div><h2>Add stocks to see data</h2><p>Use the search bar above</p></div></td></tr>';
-    document.getElementById('row-count').textContent = '0 rows';
-    return;
+    tbody.innerHTML='<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📊</div><h2>Add stocks to see data</h2><p>Use the search bar above</p></div></td></tr>';
+    document.getElementById('row-count').textContent='0 rows'; return;
   }
 
-  let rows = [];
-  keys.forEach(key => {
-    const d = portfolio[key];
-    const color = getColor(key);
-
+  let rows=[];
+  keys.forEach(key=>{
+    const d=portfolio[key], color=getColor(key);
     if (showTTM) {
-      const ttmRev    = ttm(d.quarters, 'revenue');
-      const ttmPat    = ttm(d.quarters, 'netProfit');
-      const ttmEps    = ttm(d.quarters, 'eps');
-      const ttmMargin = ttmRev > 0 ? (ttmPat / ttmRev) * 100 : 0;
-      const prevTTMRev = ttm(d.quarters.slice(0, -4), 'revenue');
-      const prevTTMPat = ttm(d.quarters.slice(0, -4), 'netProfit');
-      const ttmRevYoY  = prevTTMRev ? ((ttmRev - prevTTMRev) / Math.abs(prevTTMRev)) * 100 : null;
-      const ttmPatYoY  = prevTTMPat ? ((ttmPat - prevTTMPat) / Math.abs(prevTTMPat)) * 100 : null;
-      rows.push({ ticker: d.ticker, mkt: d.market, color, quarter: 'TTM', revenue: ttmRev, netProfit: ttmPat, eps: ttmEps, margin: ttmMargin, revYoY: ttmRevYoY, patYoY: ttmPatYoY, isTTM: true, unit: d.unit });
+      const tr=ttm(d.quarters,'revenue'), tp=ttm(d.quarters,'netProfit'), te=ttm(d.quarters,'eps');
+      const prr=ttm(d.quarters.slice(0,-4),'revenue'), prp=ttm(d.quarters.slice(0,-4),'netProfit');
+      rows.push({ticker:d.ticker,color,quarter:'TTM',revenue:tr,netProfit:tp,eps:te,margin:tr>0?(tp/tr)*100:0,revYoY:prr?((tr-prr)/Math.abs(prr))*100:null,patYoY:prp?((tp-prp)/Math.abs(prp))*100:null,isTTM:true,unit:d.unit});
     }
-
-    d.quarters.forEach((q, i) => {
-      const rv = yoy(d.quarters, 'revenue', i);
-      const pv = yoy(d.quarters, 'netProfit', i);
-      rows.push({ ticker: d.ticker, mkt: d.market, color, quarter: q.label, revenue: q.revenue, netProfit: q.netProfit, eps: q.eps, margin: q.margin, revYoY: rv, patYoY: pv, isTTM: false, unit: d.unit });
+    d.quarters.forEach((q,i)=>{
+      rows.push({ticker:d.ticker,color,quarter:q.label,revenue:q.revenue,netProfit:q.netProfit,eps:q.eps,margin:q.margin,revYoY:yoy(d.quarters,'revenue',i),patYoY:yoy(d.quarters,'netProfit',i),isTTM:false,unit:d.unit});
     });
   });
 
   if (sortState.col) {
-    rows.sort((a, b) => {
-      let av = a[sortState.col], bv = b[sortState.col];
-      if (av == null) av = -Infinity; if (bv == null) bv = -Infinity;
-      if (typeof av === 'string') return sortState.dir * av.localeCompare(bv);
-      return sortState.dir * (bv - av);
-    });
-  } else {
-    rows.reverse();
-  }
+    rows.sort((a,b)=>{ let av=a[sortState.col],bv=b[sortState.col]; if(av==null)av=-Infinity; if(bv==null)bv=-Infinity; if(typeof av==='string')return sortState.dir*av.localeCompare(bv); return sortState.dir*(bv-av); });
+  } else { rows.reverse(); }
 
-  tbody.innerHTML = rows.map(r => `
-    <tr class="${r.isTTM ? 'ttm-row' : ''}">
+  tbody.innerHTML=rows.map(r=>`
+    <tr class="${r.isTTM?'ttm-row':''}">
       <td><span class="ticker-pill" style="background:${r.color}22;color:${r.color}">${r.ticker}</span></td>
-      <td style="text-align:center">${flag(r.mkt)}</td>
-      <td>${r.quarter}${r.isTTM ? ' <small style="color:var(--muted)">(TTM)</small>' : ''}</td>
+      <td>${r.quarter}${r.isTTM?' <small style="color:var(--muted)">(TTM)</small>':''}</td>
       <td title="${r.unit}">${fmt(r.revenue)}</td>
       <td title="${r.unit}">${fmt(r.netProfit)}</td>
-      <td>${r.eps ? r.eps.toFixed(2) : '—'}</td>
-      <td>${r.margin ? r.margin.toFixed(1) + '%' : '—'}</td>
+      <td>${r.eps?r.eps.toFixed(2):'—'}</td>
+      <td>${r.margin?r.margin.toFixed(1)+'%':'—'}</td>
       <td class="${pctCls(r.revYoY)}">${fmtPct(r.revYoY)}</td>
       <td class="${pctCls(r.patYoY)}">${fmtPct(r.patYoY)}</td>
     </tr>
   `).join('');
-
-  document.getElementById('row-count').textContent = `${rows.length} rows`;
+  document.getElementById('row-count').textContent=`${rows.length} rows`;
 }
 
-// ── CSV Export ────────────────────────────────────────────
+// ── CSV ───────────────────────────────────────────────────
 function exportCSV() {
-  const keys = Object.keys(portfolio);
-  if (!keys.length) { setStatus('No data to export', 'error'); return; }
-
-  const headers = ['Ticker','Market','Company','Unit','Quarter','Revenue','NetProfit','EPS','Margin_pct','RevYoY_pct','PatYoY_pct'];
-  const rows = [headers.join(',')];
-
-  keys.forEach(key => {
-    const d = portfolio[key];
-    d.quarters.forEach((q, i) => {
-      const rv = yoy(d.quarters, 'revenue', i);
-      const pv = yoy(d.quarters, 'netProfit', i);
-      rows.push([d.ticker, d.market, `"${d.companyName}"`, d.unit, q.label, q.revenue, q.netProfit, q.eps, q.margin, rv != null ? rv.toFixed(1) : '', pv != null ? pv.toFixed(1) : ''].join(','));
-    });
-  });
-
-  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `portfolio_pulse_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
-  setStatus('✓ CSV downloaded', 'ok');
+  const keys = filteredKeys();
+  if (!keys.length) { setStatus('No data to export','error'); return; }
+  const rows=[['Ticker','Market','Company','Unit','Quarter','Revenue','NetProfit','EPS','Margin_pct','RevYoY_pct','PatYoY_pct'].join(',')];
+  keys.forEach(key=>{ const d=portfolio[key]; d.quarters.forEach((q,i)=>{ const rv=yoy(d.quarters,'revenue',i),pv=yoy(d.quarters,'netProfit',i); rows.push([d.ticker,d.market,`"${d.companyName}"`,d.unit,q.label,q.revenue,q.netProfit,q.eps,q.margin,rv!=null?rv.toFixed(1):'',pv!=null?pv.toFixed(1):''].join(',')); }); });
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));
+  a.download=`portfolio_pulse_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  setStatus('✓ CSV downloaded','ok');
 }
 
 // ── Init ──────────────────────────────────────────────────
