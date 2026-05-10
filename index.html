@@ -594,7 +594,10 @@ async function refreshAll() {
     } catch { failed.push(d.ticker); }
   }
   save(); render();
-  btn.disabled = false; btn.textContent = '↻ Refresh';
+  // Also refresh macro strip and Market Watch charts
+  loadMacro(true);
+  if (mwLoaded) loadMacroCharts(true);
+  btn.disabled = false; btn.textContent = '↻ Update';
   if (failed.length) setStatus(`✓ Refreshed — failed: ${failed.join(', ')}`, 'error');
   else setStatus(`✓ All ${keys.length} stocks refreshed`, 'ok');
 }
@@ -1077,12 +1080,13 @@ function mwLine(id, labels, datasets, yFmt) {
   });
 }
 
-async function loadMacroCharts() {
-  if (mwLoaded) return;
+async function loadMacroCharts(force=false) {
+  if (mwLoaded && !force) return;
+  mwLoaded = false;
   document.getElementById('mw-loading').style.display = '';
   document.getElementById('mw-charts').style.display  = 'none';
   try {
-    const r = await fetch(`${PROXY}/macro-chart`);
+    const r = await fetch(`${PROXY}/macro-chart${force ? '?force=1' : ''}`);
     if (!r.ok) throw new Error('Failed to load');
     const d = await r.json();
     if (d.error) throw new Error(d.error);
@@ -1202,9 +1206,9 @@ function macroCard(label, value, prev, format, invertArrow) {
   </div>`;
 }
 
-async function loadMacro() {
+async function loadMacro(force=false) {
   try {
-    const r = await fetch(`${PROXY}/macro`);
+    const r = await fetch(`${PROXY}/macro${force ? '?force=1' : ''}`);
     if (!r.ok) throw new Error('macro fetch failed');
     const d = await r.json();
     if (d.error) throw new Error(d.error);
