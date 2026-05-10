@@ -174,6 +174,41 @@ tr.ttm-row td:first-child{color:var(--accent)}
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ── AI Chat Panel ── */
+.ai-panel{
+  position:fixed;top:0;right:-420px;width:400px;height:100vh;
+  background:var(--surface);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:200;
+  transition:right .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:-4px 0 32px rgba(0,0,0,.4);
+}
+.ai-panel.open{right:0}
+.ai-panel-header{
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.ai-panel-title{font-size:14px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ai-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:2px 6px;border-radius:4px}
+.ai-close:hover{color:var(--text);background:var(--surface2)}
+.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.ai-msg{max-width:88%;font-size:13px;line-height:1.5;padding:10px 14px;border-radius:12px;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ai-msg.user{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:4px}
+.ai-msg.ai{align-self:flex-start;background:var(--surface2);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.ai-msg.error{align-self:flex-start;background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);border-radius:10px}
+.ai-empty{color:var(--muted);font-size:12px;text-align:center;margin-top:40px;line-height:1.8}
+.ai-suggestions{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+.ai-suggestion{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--muted2);cursor:pointer;text-align:left;transition:all .15s}
+.ai-suggestion:hover{border-color:var(--accent);color:var(--accent)}
+.ai-input-wrap{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.ai-input{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;padding:9px 13px;color:var(--text);font-size:13px;outline:none;resize:none;font-family:inherit;transition:border-color .2s}
+.ai-input:focus{border-color:var(--accent)}
+.ai-send{background:linear-gradient(135deg,var(--accent),#5a4ee8);border:none;border-radius:10px;color:#fff;padding:9px 14px;cursor:pointer;font-size:16px;transition:opacity .2s}
+.ai-send:hover{opacity:.85}
+.ai-send:disabled{opacity:.4;cursor:not-allowed}
+.btn-ai{background:linear-gradient(135deg,rgba(124,109,250,.15),rgba(0,229,184,.1));border:1px solid var(--accent);color:var(--accent)}
+.btn-ai:hover{background:linear-gradient(135deg,rgba(124,109,250,.3),rgba(0,229,184,.2))}
+
 @media(max-width:900px){
   header{padding:12px 16px}
   main{padding:0 16px 40px}
@@ -201,6 +236,7 @@ tr.ttm-row td:first-child{color:var(--accent)}
       <input id="ticker-input" type="text" placeholder="TICKER?" maxlength="20"/>
       <button id="add-btn" class="btn btn-primary" onclick="addStock()">+ Add Stock</button>
     </div>
+    <button class="btn btn-sm btn-ai" onclick="toggleAI()">✦ Ask AI</button>
     <button id="refresh-btn" class="btn btn-sm btn-refresh" onclick="refreshAll()" title="Re-fetch latest data for all stocks">↻ Update</button>
     <button class="btn btn-sm btn-clear" onclick="clearAll()" title="Remove all stocks and start fresh">✕ Clear All</button>
     <button class="btn btn-sm btn-ghost" onclick="exportCSV()">⬇ CSV</button>
@@ -208,6 +244,29 @@ tr.ttm-row td:first-child{color:var(--accent)}
 </header>
 
 <div id="status-bar">Select market, type a ticker and click Add Stock</div>
+
+<!-- ── AI CHAT PANEL ── -->
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-panel-header">
+    <span class="ai-panel-title">✦ AI Portfolio Analyst</span>
+    <button class="ai-close" onclick="toggleAI()">×</button>
+  </div>
+  <div class="ai-messages" id="ai-messages">
+    <div class="ai-empty">
+      Ask anything about your portfolio
+      <div class="ai-suggestions">
+        <button class="ai-suggestion" onclick="askSuggestion(this)">Which stock has the best margin trend?</button>
+        <button class="ai-suggestion" onclick="askSuggestion(this)">Compare revenue growth across my stocks</button>
+        <button class="ai-suggestion" onclick="askSuggestion(this)">Which stock is the strongest overall?</button>
+        <button class="ai-suggestion" onclick="askSuggestion(this)">Any red flags in my portfolio?</button>
+      </div>
+    </div>
+  </div>
+  <div class="ai-input-wrap">
+    <textarea class="ai-input" id="ai-input" rows="1" placeholder="Ask about your portfolio…"></textarea>
+    <button class="ai-send" id="ai-send" onclick="sendAI()">➤</button>
+  </div>
+</div>
 
 <!-- ── MARKET TABS ── -->
 <div class="market-tabs-bar">
@@ -847,6 +906,68 @@ function exportCSV() {
   a.download=`portfolio_pulse_${new Date().toISOString().slice(0,10)}.csv`; a.click();
   setStatus('✓ CSV downloaded','ok');
 }
+
+// ── AI Chat ───────────────────────────────────────────────
+function toggleAI() {
+  document.getElementById('ai-panel').classList.toggle('open');
+}
+
+function askSuggestion(btn) {
+  document.getElementById('ai-input').value = btn.textContent;
+  sendAI();
+}
+
+async function sendAI() {
+  const input = document.getElementById('ai-input');
+  const question = input.value.trim();
+  if (!question) return;
+
+  const msgs = document.getElementById('ai-messages');
+  // Clear empty state on first message
+  const empty = msgs.querySelector('.ai-empty');
+  if (empty) empty.remove();
+
+  // Add user bubble
+  msgs.innerHTML += `<div class="ai-msg user">${question}</div>`;
+  input.value = '';
+  input.style.height = 'auto';
+
+  // Add loading bubble
+  const loadId = 'ai-load-' + Date.now();
+  msgs.innerHTML += `<div class="ai-msg ai" id="${loadId}"><span class="spinner"></span> Thinking…</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  const btn = document.getElementById('ai-send');
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${PROXY}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, portfolio })
+    });
+    const data = await res.json();
+    document.getElementById(loadId).remove();
+    if (!res.ok) {
+      msgs.innerHTML += `<div class="ai-msg error">⚠ ${data.error}</div>`;
+    } else {
+      msgs.innerHTML += `<div class="ai-msg ai">${data.answer}</div>`;
+    }
+  } catch(e) {
+    document.getElementById(loadId)?.remove();
+    msgs.innerHTML += `<div class="ai-msg error">⚠ Could not reach AI — check your connection.</div>`;
+  }
+
+  btn.disabled = false;
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// Auto-resize textarea & Enter to send
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('ai-input');
+  inp.addEventListener('input', () => { inp.style.height = 'auto'; inp.style.height = inp.scrollHeight + 'px'; });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI(); } });
+});
 
 // ── Init ──────────────────────────────────────────────────
 load();
