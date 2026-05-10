@@ -1,51 +1,82 @@
 # Portfolio Pulse
 
-A live NSE stock portfolio tracker built with a Node.js scraping backend and a single-page dashboard frontend.
+A clean, dark-themed stock portfolio tracker for **Indian (NSE)** and **US** equities — built as a single HTML file with no install required.
 
-**Live site → [neelshah1903.github.io/portfolio-pulse](https://neelshah1903.github.io/portfolio-pulse/)**
+**Live:** https://neelshah1903.github.io/portfolio-pulse/
 
 ---
 
 ## What it does
 
-Add any NSE-listed stock ticker and instantly get a full quarterly financial breakdown — revenue, net profit, EPS, margins, and year-on-year growth — all pulled live from Screener.in.
+- Add any NSE or US stock ticker and instantly pull the last 8–12 quarters of financials
+- Separate **🇮🇳 India** and **🇺🇸 US** dashboard views — no mixing of markets in charts
+- Quarterly data: Revenue, Net Profit, EPS, Net Margin
+- Cross-stock comparisons only include stocks that have **reported the latest quarter** — stocks still pending are flagged with ⏳ and excluded from YoY charts and the scatter quadrant until results are out
+- Everything saved to browser localStorage — your portfolio persists across sessions
 
-### Dashboard features
+## Features
 
-- **Portfolio KPIs** — TTM revenue, TTM PAT, portfolio-level revenue growth % and PAT growth % for the latest reported quarter
-- **Smart quarter alignment** — cross-stock comparisons only include stocks that have reported the latest quarter; stocks still pending show a ⏳ indicator and are excluded until their results drop
-- **Stock chips with sparklines** — each holding shows an 8-quarter mini revenue trend at a glance
-- **5 interactive charts**
-  - Revenue trend (4Q / 8Q / 12Q toggle)
-  - Net profit trend
-  - Revenue YoY % bar chart
-  - PAT YoY % bar chart
-  - Net margin % trend
-  - Rev vs PAT growth quadrant scatter (Star / Cash Cow / Turnaround / Laggard)
-- **Sortable quarterly table** with TTM rows, colour-coded tickers, and YoY growth columns
-- **CSV export** — one click downloads all data as a spreadsheet
-- **LocalStorage persistence** — stocks are saved in the browser, so data survives page refreshes
+### KPI Cards
+- Portfolio TTM Revenue & Net Profit (auto-formatted: ₹ Cr / $ M / $ B)
+- Portfolio Revenue & PAT YoY growth (vs same quarter last year)
+- Best revenue and PAT performer of the quarter
 
----
+### Charts
+| Chart | Description |
+|---|---|
+| Revenue Trend | Line chart — 4Q / 8Q / 12Q toggle |
+| Net Profit Trend | Line chart with same period |
+| Revenue YoY % | Bar chart — latest quarter only, qualified stocks |
+| PAT YoY % | Bar chart — latest quarter only, qualified stocks |
+| Net Margin % | Multi-line trend — last 8 quarters |
+| Quadrant (Scatter) | Rev growth vs PAT growth — Star / Cash Cow / Turnaround / Laggard |
 
-## Architecture
+### Holdings chips
+Each stock shows a mini revenue sparkline and the YoY revenue growth % at a glance.
 
-| Layer | Tech | Hosted on |
-|-------|------|-----------|
-| Frontend | Vanilla HTML/CSS/JS + Chart.js | GitHub Pages |
-| Backend | Node.js + Express + Cheerio | Render (free tier) |
-| Data source | Screener.in (scraped) | — |
+### Quarterly table
+Sortable by any column. Includes TTM rows. Hover on Revenue/Profit cells to see the unit (₹ Cr or $ M).
 
-The backend proxy at `https://portfolio-proxy-976u.onrender.com` handles scraping so the frontend never hits Screener.in directly (avoiding CORS issues). It automatically falls back from consolidated to standalone financials for companies like insurance firms that don't publish consolidated results.
-
----
-
-## Supported tickers
-
-Any NSE ticker listed on Screener.in — banks (HDFCBANK, ICICIBANK, SBIN), IT (TCS, INFY, WIPRO), conglomerates (RELIANCE), insurance (ICICIGI), and more.
+### CSV Export
+Downloads all quarterly data for the active market view.
 
 ---
 
-## Local usage
+## How to use
 
-Just open `index.html` in any browser. No build step, no dependencies, no server needed on the frontend.
+1. Open https://neelshah1903.github.io/portfolio-pulse/
+2. Select **🇮🇳 India** or **🇺🇸 US** from the dropdown
+3. Type a ticker (e.g. `HDFCBANK`, `AAPL`) and click **+ Add Stock**
+4. Switch between **All / India / US** tabs to isolate each market's dashboard
+
+Your portfolio is saved in your browser — no account needed.
+
+---
+
+## Data sources
+
+| Market | Source | Data |
+|---|---|---|
+| 🇮🇳 NSE | [Screener.in](https://www.screener.in) | Consolidated → Standalone fallback |
+| 🇺🇸 US | [Barchart.com](https://www.barchart.com) | Quarterly income statement |
+
+Fetched via a lightweight Node.js proxy ([portfolio-proxy](https://github.com/neelshah1903/portfolio-proxy)) hosted on Render.
+
+---
+
+## Tech stack
+
+- **Frontend:** Vanilla HTML/CSS/JS — zero frameworks, zero dependencies
+- **Charts:** [Chart.js 4](https://www.chartjs.org/)
+- **Backend proxy:** Node.js + Express + Cheerio (HTML scraping)
+- **Hosting:** GitHub Pages (frontend) + Render free tier (proxy)
+- **Storage:** Browser localStorage
+
+---
+
+## Limitations
+
+- Render free tier spins down after inactivity — first stock fetch may take ~15 seconds to wake up
+- US stock data depends on Barchart.com page structure; may break if they change their layout
+- Currencies are not converted — India stocks are in ₹ Crore, US stocks in $ Million; mixed-market KPI totals are hidden to avoid misleading sums
+- Historical data limited to what Screener.in / Barchart shows publicly (typically 8–12 quarters)
