@@ -1016,20 +1016,19 @@ async function loadMacro() {
       ? (d.spread.value >= 0 ? 'macro-up' : 'macro-down') : 'macro-neutral';
 
     const cards = [
-      macroCard('🇺🇸 10Y Yield',   d.dgs10.value,    d.dgs10.prev,    pct,  false),
-      macroCard('🇺🇸 2Y Yield',    d.dgs2.value,     d.dgs2.prev,     pct,  false),
+      macroCard('US 10Y Treasury',  d.dgs10.value,    d.dgs10.prev,    pct,  false),
+      macroCard('US 2Y Treasury',   d.dgs2.value,     d.dgs2.prev,     pct,  false),
       `<div class="macro-card">
-        <div class="macro-label">Yield Spread (10Y-2Y)</div>
+        <div class="macro-label">Yield Spread (10Y−2Y)</div>
         <div class="macro-value ${spreadCls}">${d.spread.value != null ? d.spread.value.toFixed(2) + '%' : '—'}</div>
-        <div class="macro-change macro-neutral">${d.spread.value >= 0 ? 'Normal' : 'Inverted ⚠'}</div>
+        <div class="macro-change ${spreadCls}">${d.spread.value != null ? (d.spread.value >= 0 ? 'Normal curve' : 'Inverted ⚠') : ''}</div>
       </div>`,
-      macroCard('VIX',             d.vix.value,      d.vix.prev,      num,  true),
-      macroCard('🇺🇸 CPI YoY',    d.cpi.value,      null,            pct,  true),
-      macroCard('Fed Rate',        d.fedfunds.value, d.fedfunds.prev, pct,  false),
-      macroCard('WTI Crude',       d.wti.value,      d.wti.prev,      usd,  false),
-      macroCard('Brent Crude',     d.brent.value,    d.brent.prev,    usd,  false),
-      macroCard('Gold',            d.gold.value,     d.gold.prev,     usd,  false),
-      macroCard('USD/INR',         d.usdinr.value,   d.usdinr.prev,   inr,  false),
+      macroCard('VIX',              d.vix.value,      d.vix.prev,      num,  true),
+      macroCard('US CPI YoY',       d.cpi.value,      null,            pct,  true),
+      macroCard('Fed Funds Rate',   d.fedfunds.value, d.fedfunds.prev, pct,  false),
+      macroCard('WTI Crude',        d.wti.value,      d.wti.prev,      usd,  false),
+      macroCard('Brent Crude',      d.brent.value,    d.brent.prev,    usd,  false),
+      macroCard('Gold',             d.gold.value,     d.gold.prev,     usd,  false),
     ];
 
     document.getElementById('macro-strip').innerHTML = cards.join('');
