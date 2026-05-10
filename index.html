@@ -1010,12 +1010,28 @@ async function loadMacro() {
     const pct  = v => v != null ? v.toFixed(2) + '%' : '—';
     const usd  = v => v != null ? '$' + v.toFixed(1) : '—';
     const num  = v => v != null ? v.toFixed(2) : '—';
-    const inr  = v => v != null ? '₹' + v.toFixed(2) : '—';
+    const bigNum = v => v != null ? v.toLocaleString('en-US', {maximumFractionDigits:0}) : '—';
+
+    function idxCard(label, val, chg) {
+      const chgStr = chg != null ? (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%' : '';
+      const cls = chg != null ? (chg >= 0 ? 'macro-up' : 'macro-down') : 'macro-neutral';
+      return `<div class="macro-card">
+        <div class="macro-label">${label}</div>
+        <div class="macro-value">${bigNum(val)}</div>
+        ${chgStr ? `<div class="macro-change ${cls}">${chgStr} vs prev</div>` : ''}
+      </div>`;
+    }
 
     const spreadCls = d.spread.value != null
       ? (d.spread.value >= 0 ? 'macro-up' : 'macro-down') : 'macro-neutral';
 
     const cards = [
+      // Indices
+      idxCard('S&P 500',            d.sp500.value,    d.sp500.chg),
+      idxCard('Nasdaq',             d.nasdaq.value,   d.nasdaq.chg),
+      idxCard('Dow Jones',          d.djia.value,     d.djia.chg),
+      idxCard('Nikkei 225',         d.nikkei.value,   d.nikkei.chg),
+      // Yields
       macroCard('US 10Y Treasury',  d.dgs10.value,    d.dgs10.prev,    pct,  false),
       macroCard('US 2Y Treasury',   d.dgs2.value,     d.dgs2.prev,     pct,  false),
       `<div class="macro-card">
@@ -1023,12 +1039,15 @@ async function loadMacro() {
         <div class="macro-value ${spreadCls}">${d.spread.value != null ? d.spread.value.toFixed(2) + '%' : '—'}</div>
         <div class="macro-change ${spreadCls}">${d.spread.value != null ? (d.spread.value >= 0 ? 'Normal curve' : 'Inverted ⚠') : ''}</div>
       </div>`,
-      macroCard('VIX',              d.vix.value,      d.vix.prev,      num,  true),
-      macroCard('US CPI YoY',       d.cpi.value,      null,            pct,  true),
       macroCard('Fed Funds Rate',   d.fedfunds.value, d.fedfunds.prev, pct,  false),
+      // Macro
+      macroCard('VIX',              d.vix.value,      d.vix.prev,      num,  true),
+      macroCard('Core PCE YoY',     d.corePce.value,  null,            pct,  true),
+      macroCard('CPI YoY',          d.cpi.value,      null,            pct,  true),
+      macroCard('Unemployment',     d.unrate.value,   d.unrate.prev,   pct,  true),
+      // Commodities
       macroCard('WTI Crude',        d.wti.value,      d.wti.prev,      usd,  false),
       macroCard('Brent Crude',      d.brent.value,    d.brent.prev,    usd,  false),
-      macroCard('Gold',             d.gold.value,     d.gold.prev,     usd,  false),
     ];
 
     document.getElementById('macro-strip').innerHTML = cards.join('');
