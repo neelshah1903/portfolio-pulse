@@ -399,9 +399,13 @@ async function addStock() {
   btn.disabled = true;
   const source = market === 'US' ? 'Barchart.com' : 'Screener.in';
   setStatus(`<span class="spinner"></span> Fetching ${ticker} from ${source}…`, '');
+  const wakeTimer = setTimeout(() => {
+    setStatus(`<span class="spinner"></span> Waking up server — first load takes ~15 sec on free hosting…`, '');
+  }, 4000);
 
   try {
     const res = await fetch(`${PROXY}/stock?ticker=${encodeURIComponent(ticker)}&market=${market}`);
+    clearTimeout(wakeTimer);
     if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || res.statusText); }
     const data = await res.json();
     if (!data.quarters?.length) throw new Error('No quarterly data returned');
@@ -423,6 +427,7 @@ async function addStock() {
     setStatus(`✓ Added ${data.companyName || ticker} — ${data.quarters.length} quarters`, 'ok');
     render();
   } catch(err) {
+    clearTimeout(wakeTimer);
     setStatus(`✗ ${err.message}`, 'error');
   } finally { btn.disabled = false; }
 }
