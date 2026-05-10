@@ -415,8 +415,12 @@ function setView(m) {
   ['all','NSE','US'].forEach(id => {
     document.getElementById('tab-' + id).classList.toggle('active', id === m);
   });
-  // Sync the add-stock dropdown to match the active view
   if (m !== 'all') document.getElementById('market-select').value = m;
+  // Hide 8Q/12Q for US (Barchart only gives 5 quarters)
+  document.querySelectorAll('#rev-quarters-toggle .q-btn').forEach(b => {
+    b.style.display = (m === 'US' && (b.textContent==='8Q'||b.textContent==='12Q')) ? 'none' : '';
+  });
+  if (m === 'US' && numQuarters > 5) { numQuarters = 5; }
   render();
 }
 
@@ -869,8 +873,11 @@ function renderTable() {
     const d=portfolio[key], color=getColor(key);
     if (showTTM) {
       const tr=ttm(d.quarters,'revenue'), tp=ttm(d.quarters,'netProfit'), te=ttm(d.quarters,'eps');
-      const prr=ttm(d.quarters.slice(0,-4),'revenue'), prp=ttm(d.quarters.slice(0,-4),'netProfit');
-      rows.push({ticker:d.ticker,mkt:d.market,color,quarter:'TTM',revenue:tr,netProfit:tp,eps:te,margin:tr>0?(tp/tr)*100:0,revYoY:prr?((tr-prr)/Math.abs(prr))*100:null,patYoY:prp?((tp-prp)/Math.abs(prp))*100:null,isTTM:true,unit:d.unit});
+      const prevQ=d.quarters.slice(0,-4);
+      const prr=prevQ.length>=4?ttm(prevQ,'revenue'):null, prp=prevQ.length>=4?ttm(prevQ,'netProfit'):null;
+      const ttmRevYoY = prr ? ((tr-prr)/Math.abs(prr))*100 : null;
+      const ttmPatYoY = prp ? ((tp-prp)/Math.abs(prp))*100 : null;
+      rows.push({ticker:d.ticker,mkt:d.market,color,quarter:'TTM',revenue:tr,netProfit:tp,eps:te,margin:tr>0?(tp/tr)*100:0,revYoY:ttmRevYoY,patYoY:ttmPatYoY,isTTM:true,unit:d.unit});
     }
     d.quarters.forEach((q,i)=>{
       rows.push({ticker:d.ticker,mkt:d.market,color,quarter:q.label,revenue:q.revenue,netProfit:q.netProfit,eps:q.eps,margin:q.margin,revYoY:yoy(d.quarters,'revenue',i),patYoY:yoy(d.quarters,'netProfit',i),isTTM:false,unit:d.unit});
