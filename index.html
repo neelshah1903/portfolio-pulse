@@ -293,27 +293,29 @@ tr.ttm-row td:first-child{color:var(--accent)}
   </div>
 
   <div class="section-title">Trend Analysis</div>
-  <div class="charts-row charts-row-2">
-    <div class="chart-card">
-      <div class="chart-header">
-        <span class="chart-title" id="rev-trend-title">Revenue Trend</span>
-        <div class="quarters-toggle" id="rev-quarters-toggle">
-          <button class="q-btn" onclick="setQuarters(4)">4Q</button>
-          <button class="q-btn active" onclick="setQuarters(8)">8Q</button>
-          <button class="q-btn" onclick="setQuarters(12)">12Q</button>
+  <div id="trend-charts-section">
+    <div class="charts-row charts-row-2">
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title" id="rev-trend-title">Revenue Trend</span>
+          <div class="quarters-toggle" id="rev-quarters-toggle">
+            <button class="q-btn" onclick="setQuarters(4)">4Q</button>
+            <button class="q-btn active" onclick="setQuarters(8)">8Q</button>
+            <button class="q-btn" onclick="setQuarters(12)">12Q</button>
+          </div>
         </div>
+        <div class="chart-legend" id="rev-legend"></div>
+        <div class="chart-wrap chart-wrap-tall"><canvas id="rev-trend-chart"></canvas></div>
       </div>
-      <div class="chart-legend" id="rev-legend"></div>
-      <div class="chart-wrap chart-wrap-tall"><canvas id="rev-trend-chart"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-header"><span class="chart-title" id="pat-trend-title">Net Profit Trend</span></div>
-      <div class="chart-legend" id="pat-legend"></div>
-      <div class="chart-wrap chart-wrap-tall"><canvas id="pat-trend-chart"></canvas></div>
+      <div class="chart-card">
+        <div class="chart-header"><span class="chart-title" id="pat-trend-title">Net Profit Trend</span></div>
+        <div class="chart-legend" id="pat-legend"></div>
+        <div class="chart-wrap chart-wrap-tall"><canvas id="pat-trend-chart"></canvas></div>
+      </div>
     </div>
   </div>
 
-  <div class="charts-row charts-row-3">
+  <div class="charts-row charts-row-2">
     <div class="chart-card">
       <div class="chart-header"><span class="chart-title" id="rev-yoy-title">Revenue YoY %</span></div>
       <div class="chart-wrap"><canvas id="rev-yoy-chart"></canvas></div>
@@ -321,10 +323,6 @@ tr.ttm-row td:first-child{color:var(--accent)}
     <div class="chart-card">
       <div class="chart-header"><span class="chart-title" id="pat-yoy-title">PAT YoY %</span></div>
       <div class="chart-wrap"><canvas id="pat-yoy-chart"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-header"><span class="chart-title">Net Margin % Trend</span></div>
-      <div class="chart-wrap"><canvas id="margin-chart"></canvas></div>
     </div>
   </div>
 
@@ -418,6 +416,8 @@ function setView(m) {
     b.style.display = (m === 'US' && (b.textContent==='8Q'||b.textContent==='12Q')) ? 'none' : '';
   });
   if (m === 'US' && numQuarters > 5) { numQuarters = 5; }
+  // Hide trend charts on All tab (mixed currencies make comparison meaningless)
+  document.getElementById('trend-charts-section').style.display = m === 'all' ? 'none' : '';
   render();
 }
 
@@ -587,7 +587,6 @@ function render() {
   renderChips();
   renderTrendCharts();
   renderYoYCharts();
-  renderMarginChart();
   renderScatter();
   renderTable();
 }
@@ -789,22 +788,6 @@ function renderYoYCharts() {
 }
 
 // ── Margin chart ──────────────────────────────────────────
-function renderMarginChart() {
-  destroyChart('margin');
-  const keys = filteredKeys();
-  if (!keys.length) return;
-  let labels=[];
-  keys.forEach(k=>{ portfolio[k].quarters.slice(-8).forEach(x=>{ if(!labels.includes(x.label)) labels.push(x.label); }); });
-  labels=labels.slice(-8);
-  const datasets=keys.map(k=>{ const d=portfolio[k],color=getColor(k); return {
-    label:d.ticker, data:labels.map(lbl=>{ const f=d.quarters.find(x=>x.label===lbl); return f?f.margin:null; }),
-    borderColor:color, backgroundColor:color+'22', borderWidth:2, pointRadius:3, pointHoverRadius:6, tension:0.35, spanGaps:true
-  };});
-  charts['margin']=new Chart(document.getElementById('margin-chart'),{type:'line',data:{labels,datasets},
-    options:{...TREND_OPT,plugins:{...TREND_OPT.plugins,tooltip:{...TREND_OPT.plugins.tooltip,callbacks:{label:ctx=>` ${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)||0}%`}}},
-      scales:{...TREND_OPT.scales,y:{...TREND_OPT.scales.y,ticks:{...TREND_OPT.scales.y.ticks,callback:v=>v+'%'}}}}});
-}
-
 // ── Scatter / quadrant ────────────────────────────────────
 function renderScatter() {
   destroyChart('scatter');
@@ -966,6 +949,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Init ──────────────────────────────────────────────────
 load();
+document.getElementById('trend-charts-section').style.display = viewMarket === 'all' ? 'none' : '';
 render();
 </script>
 </body>
