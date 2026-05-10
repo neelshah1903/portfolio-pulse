@@ -209,6 +209,11 @@ tr.ttm-row td:first-child{color:var(--accent)}
 .btn-ai{background:linear-gradient(135deg,rgba(124,109,250,.15),rgba(0,229,184,.1));border:1px solid var(--accent);color:var(--accent)}
 .btn-ai:hover{background:linear-gradient(135deg,rgba(124,109,250,.3),rgba(0,229,184,.2))}
 
+/* ── Market Watch section ── */
+#mw-section{padding:0 28px 40px;max-width:1600px;margin:0 auto}
+#mw-loading{text-align:center;padding:80px 0;color:var(--muted);font-size:14px}
+.mw-chart-wrap canvas{max-height:220px}
+
 /* ── Macro strip ── */
 .macro-strip{
   background:var(--surface);border-bottom:1px solid var(--border);
@@ -297,6 +302,7 @@ tr.ttm-row td:first-child{color:var(--accent)}
   <button class="mktab active" id="tab-all"   onclick="setView('all')">🌐 All<span class="mktab-count" id="cnt-all">0</span></button>
   <button class="mktab"        id="tab-NSE"   onclick="setView('NSE')">🇮🇳 India<span class="mktab-count" id="cnt-NSE">0</span></button>
   <button class="mktab"        id="tab-US"    onclick="setView('US')">🇺🇸 US<span class="mktab-count" id="cnt-US">0</span></button>
+  <button class="mktab"        id="tab-mw"    onclick="setView('mw')">📊 Market Watch</button>
 </div>
 
 <main>
@@ -383,6 +389,39 @@ tr.ttm-row td:first-child{color:var(--accent)}
   </div>
 </main>
 
+<!-- ── MARKET WATCH ── -->
+<div id="mw-section" style="display:none">
+  <div id="mw-loading"><span class="spinner"></span> Loading market data…</div>
+  <div id="mw-charts" style="display:none">
+
+    <div class="section-title" style="margin:28px 28px 14px">US Markets (Indexed to 100)</div>
+    <div class="charts-row charts-row-2" style="padding:0 28px">
+      <div class="chart-card"><div class="chart-title">S&amp;P 500 · Nasdaq · Dow Jones</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-markets"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Nikkei 225</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-nikkei"></canvas></div></div>
+    </div>
+
+    <div class="section-title" style="margin:20px 28px 14px">Interest Rates</div>
+    <div class="charts-row charts-row-2" style="padding:0 28px">
+      <div class="chart-card"><div class="chart-title">US Treasury Yields</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-yields"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Yield Spread (10Y − 2Y) — Negative = Inverted ⚠</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-spread"></canvas></div></div>
+    </div>
+
+    <div class="section-title" style="margin:20px 28px 14px">Macro Environment</div>
+    <div class="charts-row charts-row-3" style="padding:0 28px">
+      <div class="chart-card"><div class="chart-title">VIX — Fear Index</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-vix"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Inflation YoY % — Core PCE &amp; CPI</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-inflation"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Unemployment Rate</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-unemployment"></canvas></div></div>
+    </div>
+
+    <div class="section-title" style="margin:20px 28px 14px">Commodities &amp; Policy</div>
+    <div class="charts-row charts-row-2" style="padding:0 28px;margin-bottom:40px">
+      <div class="chart-card"><div class="chart-title">Crude Oil $/bbl — WTI &amp; Brent</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-oil"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Fed Funds Rate</div><div class="mw-chart-wrap" style="margin-top:12px"><canvas id="mw-fedfunds"></canvas></div></div>
+    </div>
+
+  </div>
+</div>
+
 <script>
 const PROXY = 'https://portfolio-proxy-976u.onrender.com';
 const STORAGE_KEY = 'nse_portfolio_v4';
@@ -431,16 +470,21 @@ function filteredKeys() {
 
 function setView(m) {
   viewMarket = m;
-  ['all','NSE','US'].forEach(id => {
+  ['all','NSE','US','mw'].forEach(id => {
     document.getElementById('tab-' + id).classList.toggle('active', id === m);
   });
+
+  const isMW = m === 'mw';
+  document.getElementById('mw-section').style.display  = isMW ? '' : 'none';
+  document.querySelector('main').style.display          = isMW ? 'none' : '';
+
+  if (isMW) { loadMacroCharts(); return; }
+
   if (m !== 'all') document.getElementById('market-select').value = m;
-  // Hide 8Q/12Q for US (Barchart only gives 5 quarters)
   document.querySelectorAll('#rev-quarters-toggle .q-btn').forEach(b => {
     b.style.display = (m === 'US' && (b.textContent==='8Q'||b.textContent==='12Q')) ? 'none' : '';
   });
   if (m === 'US' && numQuarters > 5) { numQuarters = 5; }
-  // Hide trend charts on All tab (mixed currencies make comparison meaningless)
   document.getElementById('trend-charts-section').style.display = m === 'all' ? 'none' : '';
   render();
 }
@@ -970,6 +1014,164 @@ document.addEventListener('DOMContentLoaded', () => {
   inp.addEventListener('input', () => { inp.style.height = 'auto'; inp.style.height = inp.scrollHeight + 'px'; });
   inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI(); } });
 });
+
+// ── Market Watch ──────────────────────────────────────────
+const mwCharts = {};
+let mwLoaded = false;
+
+function mwDestroy(id) { if (mwCharts[id]) { mwCharts[id].destroy(); delete mwCharts[id]; } }
+
+function samp(arr, step) {
+  const r = arr.filter((_, i) => i % step === 0);
+  if (arr.length && r[r.length-1] !== arr[arr.length-1]) r.push(arr[arr.length-1]);
+  return r;
+}
+
+function norm100(arr) {
+  if (!arr.length) return arr;
+  const base = arr[0].v;
+  return arr.map(d => ({ d: d.d, v: parseFloat((d.v / base * 100).toFixed(2)) }));
+}
+
+function fmtD(s) {
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const [y, m] = s.split('-');
+  return months[+m - 1] + ' \'' + y.slice(2);
+}
+
+function mwDS(label, pts, color, fill=false, dash=[]) {
+  return {
+    label,
+    data: pts.map(d => d.v),
+    borderColor: color,
+    backgroundColor: fill ? color + '28' : 'transparent',
+    borderWidth: 1.8, pointRadius: 0, tension: 0.3,
+    fill: fill ? 'origin' : false,
+    borderDash: dash
+  };
+}
+
+function mwFlatLine(label, val, labels, color) {
+  return { label, data: labels.map(() => val), borderColor: color, backgroundColor:'transparent', borderWidth:1, borderDash:[5,4], pointRadius:0, fill:false };
+}
+
+const MW_OPT = {
+  responsive: true, maintainAspectRatio: false, animation: false,
+  plugins: {
+    legend: { position:'top', labels:{ color:'#8a9abf', boxWidth:10, font:{size:11}, padding:10 } },
+    tooltip: { backgroundColor:'#1e2540', borderColor:'#2e3a5c', borderWidth:1, titleColor:'#e8eaf6', bodyColor:'#8a9abf',
+      callbacks:{ title: ctx => ctx[0].label } }
+  },
+  scales: {
+    x: { grid:{color:'#1e2540'}, ticks:{color:'#6b7aaa', maxTicksLimit:7, font:{size:10}} },
+    y: { grid:{color:'#1e2540'}, ticks:{color:'#6b7aaa', font:{size:10}} }
+  }
+};
+
+function mwLine(id, labels, datasets, yFmt) {
+  mwDestroy(id);
+  const opts = JSON.parse(JSON.stringify(MW_OPT));
+  if (yFmt) opts.scales.y.ticks.callback = yFmt;
+  mwCharts[id] = new Chart(document.getElementById(id), {
+    type: 'line', data: { labels, datasets }, options: opts
+  });
+}
+
+async function loadMacroCharts() {
+  if (mwLoaded) return;
+  document.getElementById('mw-loading').style.display = '';
+  document.getElementById('mw-charts').style.display  = 'none';
+  try {
+    const r = await fetch(`${PROXY}/macro-chart`);
+    if (!r.ok) throw new Error('Failed to load');
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+
+    // Sample daily → weekly (~100 pts), monthly stays as-is
+    const sp  = samp(d.sp500, 5),  nq = samp(d.nasdaq, 5), dj = samp(d.djia, 5);
+    const nk  = samp(d.nikkei, 5);
+    const t10 = samp(d.dgs10, 5),  t2 = samp(d.dgs2, 5);
+    const sp2 = samp(d.spread, 5), vx = samp(d.vix, 5);
+    const wo  = samp(d.wti, 5),    br = samp(d.brent, 5);
+
+    // ── US Markets (normalized to 100)
+    const spN = norm100(sp), nqN = norm100(nq), djN = norm100(dj);
+    const mktLabels = spN.map(x => fmtD(x.d));
+    mwLine('mw-markets', mktLabels, [
+      mwDS('S&P 500',  spN, '#7c6dfa', false),
+      mwDS('Nasdaq',   nqN, '#00e5b8', false),
+      mwDS('Dow Jones',djN, '#f59e0b', false),
+    ], v => v.toFixed(0));
+
+    // ── Nikkei
+    const nkLabels = nk.map(x => fmtD(x.d));
+    mwLine('mw-nikkei', nkLabels, [mwDS('Nikkei 225', nk, '#f472b6', false)],
+      v => v.toLocaleString('en-US', {maximumFractionDigits:0}));
+
+    // ── Treasury Yields
+    const yLabels = t10.map(x => fmtD(x.d));
+    mwLine('mw-yields', yLabels, [
+      mwDS('10Y', t10, '#7c6dfa', false),
+      mwDS('2Y',  t2,  '#00e5b8', false),
+    ], v => v.toFixed(2) + '%');
+
+    // ── Yield Spread (fill red below 0)
+    const spLabels = sp2.map(x => fmtD(x.d));
+    mwDestroy('mw-spread');
+    mwCharts['mw-spread'] = new Chart(document.getElementById('mw-spread'), {
+      type: 'line',
+      data: { labels: spLabels, datasets: [{
+        label: 'Spread (10Y−2Y)',
+        data: sp2.map(x => x.v),
+        borderColor: '#7c6dfa',
+        borderWidth: 1.8, pointRadius: 0, tension: 0.3,
+        fill: { target: { value: 0 }, above: 'rgba(34,197,94,0.15)', below: 'rgba(239,68,68,0.2)' },
+        backgroundColor: 'transparent'
+      }, mwFlatLine('Zero', 0, spLabels, '#6b7aaa33') ]},
+      options: { ...MW_OPT, scales: { ...MW_OPT.scales,
+        y: { ...MW_OPT.scales.y, ticks: { ...MW_OPT.scales.y.ticks, callback: v => v.toFixed(2)+'%' } } } }
+    });
+
+    // ── VIX
+    const vxLabels = vx.map(x => fmtD(x.d));
+    mwLine('mw-vix', vxLabels, [
+      mwDS('VIX', vx, '#f59e0b', true),
+      mwFlatLine('Calm (20)', 20, vxLabels, '#22c55e'),
+      mwFlatLine('Fear (30)', 30, vxLabels, '#ef4444'),
+    ], v => v.toFixed(1));
+
+    // ── Inflation
+    const infL = d.corePce.map(x => fmtD(x.d));
+    mwLine('mw-inflation', infL, [
+      mwDS('Core PCE', d.corePce, '#7c6dfa', false),
+      mwDS('CPI',      d.cpi,     '#00e5b8', false),
+      mwFlatLine('Fed Target 2%', 2, infL, '#f59e0b'),
+    ], v => v.toFixed(1) + '%');
+
+    // ── Unemployment
+    const unL = d.unrate.map(x => fmtD(x.d));
+    mwLine('mw-unemployment', unL, [mwDS('Unemployment', d.unrate, '#f472b6', true)],
+      v => v.toFixed(1) + '%');
+
+    // ── Oil
+    const oilL = wo.map(x => fmtD(x.d));
+    mwLine('mw-oil', oilL, [
+      mwDS('WTI',   wo, '#f59e0b', false),
+      mwDS('Brent', br, '#ef4444', false),
+    ], v => '$' + v.toFixed(1));
+
+    // ── Fed Rate
+    const fedL = d.fedfunds.map(x => fmtD(x.d));
+    mwLine('mw-fedfunds', fedL, [mwDS('Fed Funds Rate', d.fedfunds, '#00e5b8', true)],
+      v => v.toFixed(2) + '%');
+
+    mwLoaded = true;
+    document.getElementById('mw-loading').style.display = 'none';
+    document.getElementById('mw-charts').style.display  = '';
+  } catch(e) {
+    document.getElementById('mw-loading').innerHTML = `<span style="color:var(--red)">Failed to load market data: ${e.message}</span>`;
+  }
+}
 
 // ── Macro indicators ──────────────────────────────────────
 function macroDir(value, prev, invertGood) {
