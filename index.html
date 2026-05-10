@@ -54,6 +54,8 @@ input::placeholder{color:var(--muted)}
 .btn-sm{padding:5px 12px;font-size:12px;border-radius:7px}
 .btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted2)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-refresh{background:rgba(0,229,184,.1);border:1px solid var(--accent2);color:var(--accent2)}
+.btn-refresh:hover{background:rgba(0,229,184,.2);box-shadow:0 2px 12px rgba(0,229,184,.25)}
 .btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 
 /* ── Status ── */
@@ -188,7 +190,6 @@ tr.ttm-row td:first-child{color:var(--accent)}
 <!-- ── HEADER ── -->
 <header>
   <div class="logo">◈ Portfolio Pulse</div>
-  <button class="btn btn-sm btn-ghost" id="refresh-btn" onclick="refreshAll()" title="Re-fetch all stocks">↻ Refresh</button>
   <div class="header-right">
     <div class="search-wrap">
       <select id="market-select" class="market-select" onchange="syncViewToAdd()">
@@ -198,6 +199,7 @@ tr.ttm-row td:first-child{color:var(--accent)}
       <input id="ticker-input" type="text" placeholder="TICKER?" maxlength="20"/>
       <button id="add-btn" class="btn btn-primary" onclick="addStock()">+ Add Stock</button>
     </div>
+    <button id="refresh-btn" class="btn btn-sm btn-refresh" onclick="refreshAll()" title="Re-fetch latest data for all stocks">↻ Refresh</button>
     <button class="btn btn-sm btn-ghost" onclick="exportCSV()">⬇ CSV</button>
   </div>
 </header>
