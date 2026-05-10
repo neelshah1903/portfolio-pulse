@@ -216,7 +216,7 @@ tr.ttm-row td:first-child{color:var(--accent)}
   <div class="header-right">
     <div class="search-wrap">
       <select id="market-select" class="market-select">
-        <option value="NSE">🇮🇳 NSE</option>
+        <option value="NSE">🇮🇳 India</option>
         <option value="US">🇺🇸 US</option>
       </select>
       <input id="ticker-input" type="text" placeholder="TICKER?" maxlength="20"/>
@@ -484,8 +484,14 @@ function fmt(n, dec = 0) {
   if (n == null || isNaN(n)) return '—';
   return n.toLocaleString('en-IN', { maximumFractionDigits: dec, minimumFractionDigits: dec });
 }
-function fmtK(n) {
+function fmtK(n, market) {
   if (n == null || isNaN(n)) return '—';
+  if (market === 'US') {
+    // values in $M — show in B or M
+    if (Math.abs(n) >= 1000) return (n / 1000).toFixed(1) + 'B';
+    return n.toFixed(0) + 'M';
+  }
+  // NSE values in ₹ Cr
   if (Math.abs(n) >= 100000) return (n / 100000).toFixed(1) + 'L';
   if (Math.abs(n) >= 1000)   return (n / 1000).toFixed(1) + 'K';
   return fmt(n, 0);
@@ -549,15 +555,16 @@ function renderKPIs() {
     if (pv != null && pv > bestPatV) { bestPatV = pv; bestPatK = k; }
   });
 
+  const soloMarket = mixed ? null : (keys.length ? portfolio[keys[0]].market : 'NSE');
   if (mixed) {
-    document.getElementById('kpi-rev').textContent = '~' + fmtK(totalTTMRev);
-    document.getElementById('kpi-pat').textContent = '~' + fmtK(totalTTMPat);
-    document.getElementById('kpi-rev-sub').textContent = 'Mixed currencies (INR+USD)';
-    document.getElementById('kpi-pat-sub').textContent = 'Mixed currencies (INR+USD)';
+    document.getElementById('kpi-rev').textContent = '—';
+    document.getElementById('kpi-pat').textContent = '—';
+    document.getElementById('kpi-rev-sub').textContent = 'Mixed currencies — see table';
+    document.getElementById('kpi-pat-sub').textContent = 'Mixed currencies — see table';
   } else {
     const unit = keys.length ? portfolio[keys[0]].unit : '₹ Cr';
-    document.getElementById('kpi-rev').textContent = fmtK(totalTTMRev);
-    document.getElementById('kpi-pat').textContent = fmtK(totalTTMPat);
+    document.getElementById('kpi-rev').textContent = fmtK(totalTTMRev, soloMarket);
+    document.getElementById('kpi-pat').textContent = fmtK(totalTTMPat, soloMarket);
     document.getElementById('kpi-rev-sub').textContent = unit + ' (last 4 quarters)';
     document.getElementById('kpi-pat-sub').textContent = unit + ' (last 4 quarters)';
   }
