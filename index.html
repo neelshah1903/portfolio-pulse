@@ -847,7 +847,11 @@ function renderTrendCharts() {
   const revData = buildTrendData('revenue');
   if (revData) { charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:makeTrendOpt(true)}); document.getElementById('rev-legend').innerHTML=legHtml; }
   const patData = buildTrendData('netProfit');
-  if (patData) { charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(false)}); document.getElementById('pat-legend').innerHTML=legHtml; }
+  if (patData) {
+    const hasNegPat = patData.datasets.some(ds => ds.data.some(v => v != null && v <= 0));
+    charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(!hasNegPat)});
+    document.getElementById('pat-legend').innerHTML=legHtml;
+  }
 
   // OPM % trend (% values, not currency — use separate options)
   destroyChart('opm-trend');
