@@ -1,6 +1,6 @@
 # Portfolio Pulse
 
-A clean, dark-themed stock portfolio tracker for **Indian (NSE)** and **US** equities — built as a single HTML file with no install required.
+A clean, dark-themed stock portfolio tracker for **Indian** and **US** equities — built as a single HTML file with no install required.
 
 **Live:** https://neelshah1903.github.io/portfolio-pulse/
 
