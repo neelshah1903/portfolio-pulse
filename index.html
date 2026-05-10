@@ -700,27 +700,35 @@ function renderKPIs() {
   }
 
   let latestRev=0,latestPat=0,prevRev=0,prevPat=0,bestRevK=null,bestRevV=-Infinity,bestPatK=null,bestPatV=-Infinity;
+  let ewRevSum=0,ewRevCount=0,ewPatSum=0,ewPatCount=0;
   qualified.forEach(k => {
     const q=portfolio[k].quarters;
     const ci = latestQ ? idxOf(k,latestQ) : q.length-1;
     if (ci>=4) { latestRev+=q[ci].revenue; prevRev+=q[ci-4].revenue; latestPat+=q[ci].netProfit; prevPat+=q[ci-4].netProfit; }
     const rv=ci>=0?yoy(q,'revenue',ci):null, pv=ci>=0?yoy(q,'netProfit',ci):null;
+    if (rv!=null) { ewRevSum+=rv; ewRevCount++; }
+    if (pv!=null) { ewPatSum+=pv; ewPatCount++; }
     if (rv!=null&&rv>bestRevV){bestRevV=rv;bestRevK=k;}
     if (pv!=null&&pv>bestPatV){bestPatV=pv;bestPatK=k;}
   });
 
-  const rg = prevRev ? ((latestRev-prevRev)/Math.abs(prevRev))*100 : null;
-  const pg = prevPat ? ((latestPat-prevPat)/Math.abs(prevPat))*100 : null;
-  document.getElementById('kpi-rev-growth').textContent = rg!=null?fmtPct(rg):'—';
-  document.getElementById('kpi-pat-growth').textContent = pg!=null?fmtPct(pg):'—';
+  // Equal-weight = simple average of each stock's YoY%
+  const ewRg = ewRevCount ? ewRevSum/ewRevCount : null;
+  const ewPg = ewPatCount ? ewPatSum/ewPatCount : null;
+  // Revenue-weighted = aggregate portfolio growth
+  const rwRg = prevRev ? ((latestRev-prevRev)/Math.abs(prevRev))*100 : null;
+  const rwPg = prevPat ? ((latestPat-prevPat)/Math.abs(prevPat))*100 : null;
+
+  document.getElementById('kpi-rev-growth').textContent = ewRg!=null?fmtPct(ewRg):'—';
+  document.getElementById('kpi-pat-growth').textContent = ewPg!=null?fmtPct(ewPg):'—';
 
   const qNote = `${qualified.length}/${n} stocks · ${latestQ||'YoY'}`;
-  document.getElementById('kpi-rev-growth-sub').textContent = qNote;
-  document.getElementById('kpi-pat-growth-sub').textContent = qNote;
+  document.getElementById('kpi-rev-growth-sub').innerHTML = `${qNote}${rwRg!=null?` · <span style="color:var(--muted2)">rev-wt ${fmtPct(rwRg)}</span>`:''}`;
+  document.getElementById('kpi-pat-growth-sub').innerHTML = `${qNote}${rwPg!=null?` · <span style="color:var(--muted2)">rev-wt ${fmtPct(rwPg)}</span>`:''}`;
 
   ['kpi-rev-growth-badge','kpi-pat-growth-badge'].forEach((id,i) => {
-    const v = i===0?rg:pg, el=document.getElementById(id);
-    el.textContent = latestQ||'YoY';
+    const v = i===0?ewRg:ewPg, el=document.getElementById(id);
+    el.textContent = 'eq-wt avg';
     el.className = 'kpi-badge '+(v==null?'neutral':v>=0?'up':'down');
   });
 
