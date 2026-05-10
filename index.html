@@ -750,8 +750,8 @@ function renderScatter() {
       plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e2540',borderColor:'#2e3a5c',borderWidth:1,titleColor:'#e8eaf6',bodyColor:'#8a9abf',
         callbacks:{label:ctx=>` ${ctx.dataset.label}: Rev ${ctx.parsed.x>=0?'+':''}${ctx.parsed.x}% / PAT ${ctx.parsed.y>=0?'+':''}${ctx.parsed.y}%`}}},
       scales:{
-        x:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',callback:v=>v+'%'},title:{display:true,text:'Revenue YoY %',color:'#6b7aaa'}},
-        y:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',callback:v=>v+'%'},title:{display:true,text:'PAT YoY %',color:'#6b7aaa'}}
+        x:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',callback:v=>parseFloat(v.toFixed(1))+'%'},title:{display:true,text:'Revenue YoY %',color:'#6b7aaa'}},
+        y:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',callback:v=>parseFloat(v.toFixed(1))+'%'},title:{display:true,text:'PAT YoY %',color:'#6b7aaa'}}
       }
     },
     plugins:[{id:'ql',afterDraw(chart){
