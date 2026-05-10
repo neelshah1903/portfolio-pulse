@@ -345,7 +345,10 @@ tr.ttm-row td:first-child{color:var(--accent)}
       <div class="chart-card">
         <div class="chart-header"><span class="chart-title" id="opm-trend-title">Operating Margin %</span></div>
         <div class="chart-legend" id="opm-legend"></div>
-        <div class="chart-wrap chart-wrap-tall"><canvas id="opm-trend-chart"></canvas></div>
+        <div class="chart-wrap chart-wrap-tall">
+            <canvas id="opm-trend-chart"></canvas>
+            <div id="opm-empty" style="display:none;text-align:center;padding:60px 0;color:var(--muted);font-size:12px">No operating margin data<br><span style="font-size:11px">Banks &amp; financials don't report this</span></div>
+          </div>
       </div>
     </div>
   </div>
@@ -379,8 +382,8 @@ tr.ttm-row td:first-child{color:var(--accent)}
         <tr>
           <th onclick="sortBy('ticker')">Ticker</th>
           <th onclick="sortBy('quarter')">Quarter</th>
-          <th onclick="sortBy('revenue')">Revenue</th>
-          <th onclick="sortBy('netProfit')">Net Profit</th>
+          <th onclick="sortBy('revenue')" id="th-revenue">Revenue</th>
+          <th onclick="sortBy('netProfit')" id="th-netProfit">Net Profit</th>
           <th onclick="sortBy('eps')">EPS</th>
           <th onclick="sortBy('opMargin')" id="th-opMargin">Op. Margin</th>
           <th onclick="sortBy('margin')">Net Margin</th>
@@ -728,7 +731,7 @@ function renderKPIs() {
 
   ['kpi-rev-growth-badge','kpi-pat-growth-badge'].forEach((id,i) => {
     const v = i===0?ewRg:ewPg, el=document.getElementById(id);
-    el.textContent = 'eq-wt avg';
+    el.textContent = 'avg of picks';
     el.className = 'kpi-badge '+(v==null?'neutral':v>=0?'up':'down');
   });
 
@@ -759,7 +762,7 @@ function renderChips() {
     chip.innerHTML = `
       <div class="chip-info">
         <div class="chip-ticker" style="color:${color}">
-          ${d.ticker}
+          ${viewMarket==='all'?`<span style="font-size:10px">${flag(d.market)}</span> `:''}${d.ticker}
           <span class="chip-pct ${pctCls(revYoY)}">${revYoY!=null?fmtPct(revYoY):''}</span>
           ${hasPending?`<span title="Pending ${latestQ}" style="font-size:10px;color:var(--yellow);margin-left:2px">⏳</span>`:''}
         </div>
@@ -851,8 +854,13 @@ function renderTrendCharts() {
     borderColor:color, backgroundColor:color+'22', borderWidth:2, pointRadius:3, pointHoverRadius:6, tension:0.35, spanGaps:true
   };});
   const opmOpt = {...TREND_OPT, scales:{...TREND_OPT.scales, y:{...TREND_OPT.scales.y, ticks:{...TREND_OPT.scales.y.ticks, callback:v=>v+'%'}}}};
-  if (opmDatasets.some(ds=>ds.data.some(v=>v!=null))) {
-    charts['opm-trend']=new Chart(document.getElementById('opm-trend-chart'),{type:'line',data:{labels,datasets:opmDatasets},options:opmOpt});
+  const opmCanvas = document.getElementById('opm-trend-chart');
+  const opmHasData = opmDatasets.some(ds=>ds.data.some(v=>v!=null));
+  opmCanvas.style.display = opmHasData ? '' : 'none';
+  const opmEmpty = document.getElementById('opm-empty');
+  if (opmEmpty) opmEmpty.style.display = opmHasData ? 'none' : '';
+  if (opmHasData) {
+    charts['opm-trend']=new Chart(opmCanvas,{type:'line',data:{labels,datasets:opmDatasets},options:opmOpt});
     document.getElementById('opm-legend').innerHTML=legHtml;
   }
 }
@@ -952,6 +960,12 @@ function renderTable() {
   // Label op margin column accurately per market
   const opMarginLabel = viewMarket === 'NSE' ? 'OPM% (≈EBITDA)' : viewMarket === 'US' ? 'EBIT Margin' : 'Op. Margin';
   document.getElementById('th-opMargin').textContent = opMarginLabel;
+
+  // Label revenue/profit columns with unit
+  const units = [...new Set(keys.map(k => portfolio[k].unit))];
+  const unitStr = units.length === 1 ? ` (${units[0]})` : '';
+  document.getElementById('th-revenue').textContent = `Revenue${unitStr}`;
+  document.getElementById('th-netProfit').textContent = `Net Profit${unitStr}`;
 
   let rows=[];
   keys.forEach(key=>{
