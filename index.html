@@ -727,7 +727,7 @@ function renderKPIs() {
 
   const qNote = `${qualified.length}/${n} stocks · ${latestQ||'YoY'}`;
   document.getElementById('kpi-rev-growth-sub').innerHTML = `${qNote}${rwRg!=null?` · <span style="color:var(--muted2)">rev-wt ${fmtPct(rwRg)}</span>`:''}`;
-  document.getElementById('kpi-pat-growth-sub').innerHTML = `${qNote}${rwPg!=null?` · <span style="color:var(--muted2)">rev-wt ${fmtPct(rwPg)}</span>`:''}`;
+  document.getElementById('kpi-pat-growth-sub').innerHTML = `${qNote}${rwPg!=null?` · <span style="color:var(--muted2)">pat-wt ${fmtPct(rwPg)}</span>`:''}`;
 
   ['kpi-rev-growth-badge','kpi-pat-growth-badge'].forEach((id,i) => {
     const v = i===0?ewRg:ewPg, el=document.getElementById(id);
