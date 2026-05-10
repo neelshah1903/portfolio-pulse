@@ -209,12 +209,31 @@ tr.ttm-row td:first-child{color:var(--accent)}
 .btn-ai{background:linear-gradient(135deg,rgba(124,109,250,.15),rgba(0,229,184,.1));border:1px solid var(--accent);color:var(--accent)}
 .btn-ai:hover{background:linear-gradient(135deg,rgba(124,109,250,.3),rgba(0,229,184,.2))}
 
+/* ── Macro strip ── */
+.macro-strip{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 28px;display:flex;gap:6px;overflow-x:auto;flex-wrap:nowrap;align-items:center;
+}
+.macro-strip::-webkit-scrollbar{height:3px}
+.macro-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:8px 14px;display:flex;flex-direction:column;gap:2px;min-width:110px;flex-shrink:0;
+}
+.macro-label{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.macro-value{font-size:14px;font-weight:700;color:var(--text)}
+.macro-change{font-size:10px;font-weight:600}
+.macro-up{color:var(--green)}
+.macro-down{color:var(--red)}
+.macro-neutral{color:var(--muted)}
+.macro-loading{font-size:12px;color:var(--muted);padding:4px 0}
+
 @media(max-width:900px){
   header{padding:12px 16px}
   main{padding:0 16px 40px}
   .charts-row-2,.charts-row-3{grid-template-columns:1fr}
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .market-tabs-bar{padding:0 16px}
+  .macro-strip{padding:10px 16px}
 }
 @media(max-width:500px){
   .kpi-grid{grid-template-columns:1fr}
@@ -266,6 +285,11 @@ tr.ttm-row td:first-child{color:var(--accent)}
     <textarea class="ai-input" id="ai-input" rows="1" placeholder="Ask about your portfolio…"></textarea>
     <button class="ai-send" id="ai-send" onclick="sendAI()">➤</button>
   </div>
+</div>
+
+<!-- ── MACRO STRIP ── -->
+<div class="macro-strip" id="macro-strip">
+  <span class="macro-loading">Loading market indicators…</span>
 </div>
 
 <!-- ── MARKET TABS ── -->
@@ -947,11 +971,79 @@ document.addEventListener('DOMContentLoaded', () => {
   inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAI(); } });
 });
 
+// ── Macro indicators ──────────────────────────────────────
+function macroDir(value, prev, invertGood) {
+  if (value == null || prev == null) return { arrow: '', cls: 'macro-neutral' };
+  const up = value > prev;
+  const good = invertGood ? !up : up;
+  return { arrow: up ? '▲' : '▼', cls: up ? (good ? 'macro-up' : 'macro-down') : (good ? 'macro-up' : 'macro-down') };
+}
+
+function macroArrow(value, prev) {
+  if (value == null || prev == null) return { arrow: '', cls: 'macro-neutral' };
+  return value > prev
+    ? { arrow: '▲', cls: 'macro-up' }
+    : { arrow: '▼', cls: 'macro-down' };
+}
+
+function macroCard(label, value, prev, format, invertArrow) {
+  const formatted = value != null ? format(value) : '—';
+  const { arrow, cls } = value != null && prev != null
+    ? (invertArrow
+        ? (value > prev ? { arrow: '▲', cls: 'macro-down' } : { arrow: '▼', cls: 'macro-up' })
+        : (value > prev ? { arrow: '▲', cls: 'macro-up' } : { arrow: '▼', cls: 'macro-down' }))
+    : { arrow: '', cls: 'macro-neutral' };
+  return `<div class="macro-card">
+    <div class="macro-label">${label}</div>
+    <div class="macro-value">${formatted}</div>
+    ${arrow ? `<div class="macro-change ${cls}">${arrow} vs prior</div>` : ''}
+  </div>`;
+}
+
+async function loadMacro() {
+  try {
+    const r = await fetch(`${PROXY}/macro`);
+    if (!r.ok) throw new Error('macro fetch failed');
+    const d = await r.json();
+    if (d.error) throw new Error(d.error);
+
+    const pct  = v => v != null ? v.toFixed(2) + '%' : '—';
+    const usd  = v => v != null ? '$' + v.toFixed(1) : '—';
+    const num  = v => v != null ? v.toFixed(2) : '—';
+    const inr  = v => v != null ? '₹' + v.toFixed(2) : '—';
+
+    const spreadCls = d.spread.value != null
+      ? (d.spread.value >= 0 ? 'macro-up' : 'macro-down') : 'macro-neutral';
+
+    const cards = [
+      macroCard('🇺🇸 10Y Yield',   d.dgs10.value,    d.dgs10.prev,    pct,  false),
+      macroCard('🇺🇸 2Y Yield',    d.dgs2.value,     d.dgs2.prev,     pct,  false),
+      `<div class="macro-card">
+        <div class="macro-label">Yield Spread (10Y-2Y)</div>
+        <div class="macro-value ${spreadCls}">${d.spread.value != null ? d.spread.value.toFixed(2) + '%' : '—'}</div>
+        <div class="macro-change macro-neutral">${d.spread.value >= 0 ? 'Normal' : 'Inverted ⚠'}</div>
+      </div>`,
+      macroCard('VIX',             d.vix.value,      d.vix.prev,      num,  true),
+      macroCard('🇺🇸 CPI YoY',    d.cpi.value,      null,            pct,  true),
+      macroCard('Fed Rate',        d.fedfunds.value, d.fedfunds.prev, pct,  false),
+      macroCard('WTI Crude',       d.wti.value,      d.wti.prev,      usd,  false),
+      macroCard('Brent Crude',     d.brent.value,    d.brent.prev,    usd,  false),
+      macroCard('Gold',            d.gold.value,     d.gold.prev,     usd,  false),
+      macroCard('USD/INR',         d.usdinr.value,   d.usdinr.prev,   inr,  false),
+    ];
+
+    document.getElementById('macro-strip').innerHTML = cards.join('');
+  } catch(e) {
+    document.getElementById('macro-strip').innerHTML = `<span class="macro-loading">Market indicators unavailable</span>`;
+  }
+}
+
 // ── Init ──────────────────────────────────────────────────
 load();
 document.getElementById('market-select').value = 'US';
 document.getElementById('trend-charts-section').style.display = viewMarket === 'all' ? 'none' : '';
 render();
+loadMacro();
 </script>
 </body>
 </html>
