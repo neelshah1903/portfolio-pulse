@@ -852,7 +852,7 @@ function renderTrendCharts() {
   }
   const patData = buildTrendData('netProfit');
   if (patData) {
-    const hasNegPat = patData.datasets.some(ds => ds.data.some(v => v != null && v <= 0));
+    const hasNegPat = patData.datasets.some(ds => ds.data.some(v => v != null && v < 0));
     const patLog = !hasNegPat;
     charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(patLog)});
     document.getElementById('pat-legend').innerHTML=legHtml;
