@@ -803,7 +803,7 @@ function buildTrendData(field) {
   if (!keys.length) return null;
   let labels = [];
   keys.forEach(k => { portfolio[k].quarters.slice(-numQuarters).forEach(x=>{ if(!labels.includes(x.label)) labels.push(x.label); }); });
-  labels = labels.slice(-numQuarters);
+  labels = labels.sort((a,b) => parseQ(a) - parseQ(b)).slice(-numQuarters);
   const datasets = keys.map(k => {
     const d=portfolio[k], color=getColor(k);
     return {
@@ -864,7 +864,7 @@ function renderTrendCharts() {
   if (!keys.length) return;
   let labels=[];
   keys.forEach(k=>{ portfolio[k].quarters.slice(-numQuarters).forEach(x=>{ if(!labels.includes(x.label)) labels.push(x.label); }); });
-  labels=labels.slice(-numQuarters);
+  labels=labels.sort((a,b)=>parseQ(a)-parseQ(b)).slice(-numQuarters);
   const opmDatasets = keys.map(k=>{ const d=portfolio[k],color=getColor(k); return {
     label:d.ticker,
     data:labels.map(lbl=>{ const f=d.quarters.find(x=>x.label===lbl); return (f&&f.opMargin!=null)?f.opMargin:null; }),
