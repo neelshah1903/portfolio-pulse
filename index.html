@@ -816,7 +816,13 @@ function buildTrendData(field) {
   return { labels, datasets };
 }
 
-function makeTrendOpt(useLog) {
+function makeTrendOpt(useLog, allVals) {
+  // For log scale, compute a sensible min (one order of magnitude below smallest value)
+  let yMin = undefined;
+  if (useLog && allVals && allVals.length) {
+    const minVal = Math.min(...allVals.filter(v => v > 0));
+    yMin = Math.pow(10, Math.floor(Math.log10(minVal)));
+  }
   return {
     responsive:true, maintainAspectRatio:false,
     interaction:{mode:'index',intersect:false},
@@ -825,6 +831,7 @@ function makeTrendOpt(useLog) {
       x:{grid:{color:'#1e2540'},ticks:{color:'#6b7aaa',font:{size:11},maxTicksLimit:8}},
       y:{
         type: useLog ? 'logarithmic' : 'linear',
+        min: yMin,
         grid:{color:'#1e2540'},
         ticks:{color:'#6b7aaa',font:{size:11},callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}
       }
@@ -846,7 +853,8 @@ function renderTrendCharts() {
 
   const revData = buildTrendData('revenue');
   if (revData) {
-    charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:makeTrendOpt(true)});
+    const revVals = revData.datasets.flatMap(ds => ds.data.filter(v => v > 0));
+    charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:makeTrendOpt(true, revVals)});
     document.getElementById('rev-legend').innerHTML=legHtml;
     document.getElementById('rev-trend-title').textContent = `Revenue Trend${unitStr?' ('+unitStr+')':''} · log scale`;
   }
@@ -854,11 +862,11 @@ function renderTrendCharts() {
   if (patData) {
     const hasNegPat = patData.datasets.some(ds => ds.data.some(v => v != null && v < 0));
     const patLog = !hasNegPat;
-    // Log scale can't handle 0 or negative — replace with null (shown as gap)
     if (patLog) {
       patData.datasets.forEach(ds => { ds.data = ds.data.map(v => (v != null && v <= 0) ? null : v); });
     }
-    charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(patLog)});
+    const patVals = patData.datasets.flatMap(ds => ds.data.filter(v => v > 0));
+    charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(patLog, patVals)});
     document.getElementById('pat-legend').innerHTML=legHtml;
     if (patLog) document.getElementById('pat-trend-title').textContent += ' · log scale';
   }
