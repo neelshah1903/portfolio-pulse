@@ -860,15 +860,12 @@ function renderTrendCharts() {
   }
   const patData = buildTrendData('netProfit');
   if (patData) {
-    const hasNegPat = patData.datasets.some(ds => ds.data.some(v => v != null && v < 0));
-    const patLog = !hasNegPat;
-    if (patLog) {
-      patData.datasets.forEach(ds => { ds.data = ds.data.map(v => (v != null && v <= 0) ? null : v); });
-    }
+    // Always use log scale — replace zeros/negatives with null (shown as gaps, doesn't break chart)
+    patData.datasets.forEach(ds => { ds.data = ds.data.map(v => (v != null && v <= 0) ? null : v); });
     const patVals = patData.datasets.flatMap(ds => ds.data.filter(v => v > 0));
-    charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(patLog, patVals)});
+    charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(patVals.length > 0, patVals)});
     document.getElementById('pat-legend').innerHTML=legHtml;
-    if (patLog) document.getElementById('pat-trend-title').textContent += ' · log scale';
+    if (patVals.length > 0) document.getElementById('pat-trend-title').textContent += ' · log scale';
   }
 
   // OPM % trend (% values, not currency — use separate options)
