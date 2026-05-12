@@ -845,12 +845,18 @@ function renderTrendCharts() {
   const legHtml = keys.map(k=>`<span class="legend-item"><span class="legend-dot" style="background:${getColor(k)}"></span>${portfolio[k].ticker}</span>`).join('');
 
   const revData = buildTrendData('revenue');
-  if (revData) { charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:makeTrendOpt(true)}); document.getElementById('rev-legend').innerHTML=legHtml; }
+  if (revData) {
+    charts['rev-trend']=new Chart(document.getElementById('rev-trend-chart'),{type:'line',data:revData,options:makeTrendOpt(true)});
+    document.getElementById('rev-legend').innerHTML=legHtml;
+    document.getElementById('rev-trend-title').textContent = `Revenue Trend${unitStr?' ('+unitStr+')':''} · log scale`;
+  }
   const patData = buildTrendData('netProfit');
   if (patData) {
     const hasNegPat = patData.datasets.some(ds => ds.data.some(v => v != null && v <= 0));
-    charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(!hasNegPat)});
+    const patLog = !hasNegPat;
+    charts['pat-trend']=new Chart(document.getElementById('pat-trend-chart'),{type:'line',data:patData,options:makeTrendOpt(patLog)});
     document.getElementById('pat-legend').innerHTML=legHtml;
+    if (patLog) document.getElementById('pat-trend-title').textContent += ' · log scale';
   }
 
   // OPM % trend (% values, not currency — use separate options)
